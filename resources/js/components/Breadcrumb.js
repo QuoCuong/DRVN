@@ -9,17 +9,6 @@ class Breadcrumb extends Component {
                     <a href="#">Admin</a>
                 </li>
                 <li className="breadcrumb-item active">Dashboard</li>
-                <li className="breadcrumb-menu d-md-down-none">
-                    <div className="btn-group" role="group" aria-label="Button group">
-                        <a className="btn" href="#">
-                            <i className="icon-speech"></i>
-                        </a>
-                        <a className="btn" href="./">
-                            <i className="icon-graph"></i>  Dashboard</a>
-                        <a className="btn" href="#">
-                            <i className="icon-settings"></i>  Settings</a>
-                    </div>
-                </li>
             </ol>
         );
     }

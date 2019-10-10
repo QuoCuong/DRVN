@@ -11,6 +11,7 @@ import UserCreate from './User/UserCreate'
 import ProjectList from './Project/ProjectList'
 import SupervisorProjectList from './Project/SupervisorProjectList'
 import ConstructionUnitProjectList from './Project/ConstructionUnitProjectList'
+import ProjectCreate from './Project/ProjectCreate'
 
 import { fetchAuthUser } from '../actions/authActions'
 
@@ -41,6 +42,7 @@ class App extends Component {
                         <Route exact path={`${path}/projects`} component={ProjectList} />
                         <Route exact path={`${path}/projects/supervisor`} component={SupervisorProjectList} />
                         <Route exact path={`${path}/projects/construction_unit`} component={ConstructionUnitProjectList} />
+                        <Route exact path={`${path}/projects/create`} component={ProjectCreate} />
                     </MainContainer>
                     <Aside />
                 </div>
