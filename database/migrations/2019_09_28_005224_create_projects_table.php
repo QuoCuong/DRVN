@@ -19,7 +19,7 @@ class CreateProjectsTable extends Migration
             $table->string('investor');
             $table->string('route_start');
             $table->string('route_end');
-            $table->unsignedInteger('route_length');
+            $table->string('route_length');
             $table->string('location');
             $table->text('description')->nullable();
             $table->date('start_date');

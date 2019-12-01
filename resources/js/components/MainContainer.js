@@ -35,4 +35,6 @@ const mapStateToProps = state => ({
     loading: state.app.loading
 })
 
-export default connect(mapStateToProps)(MainContainer)
+export default connect(
+    mapStateToProps
+)(MainContainer)

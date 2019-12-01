@@ -7,18 +7,17 @@ class RoleAdmin extends Component {
     }
 
     render() {
-        const url = this.props.match.url
         return (
             <Fragment>
                 <li className="nav-title">Cục Đường Bộ</li>
                 <li className="nav-item">
                     <Link className="nav-link"
-                        to={`${url}/users`}>
+                        to={`/admin/users`}>
                         <i className="nav-icon fa fa-users"></i> Tài khoản</Link>
                 </li>
                 <li className="nav-item">
                     <Link className="nav-link"
-                        to={`${url}/projects`}>
+                        to={`/admin/projects`}>
                         <i className="nav-icon fa fa-road"></i> Công trình</Link>
                 </li>
             </Fragment>

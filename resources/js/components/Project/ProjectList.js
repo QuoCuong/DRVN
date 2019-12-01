@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { toggleLoading } from '../../actions/appActions'
+import appActions from '../../redux/app/actions'
 import { getAll } from '../../api/projects'
 import Pagination from '../Pagination'
 import Moment from 'react-moment'
@@ -21,11 +21,11 @@ class ProjectList extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(nextProps) {
-        this.fetchData(nextProps.location.search)
+        this.props.location.search !== nextProps.location.search && this.fetchData(nextProps.location.search)
     }
 
     fetchData(search = this.props.location.search) {
-        this.props.dispatch(toggleLoading())
+        this.props.toggleLoading()
         getAll(search)
             .then(res => {
                 this.setState({
@@ -36,8 +36,12 @@ class ProjectList extends Component {
                 console.log(error.response)
             })
             .finally(() => {
-                this.props.dispatch(toggleLoading())
+                this.props.toggleLoading()
             })
+    }
+
+    handleRowClick(id) {
+        this.props.history.push(`/admin/projects/${id}`)
     }
 
     render() {
@@ -80,7 +84,7 @@ class ProjectList extends Component {
                                     <Link
                                         to={`${this.props.match.path}/create`}
                                         className="btn btn-brand btn-sm btn-success">
-                                        <i className="fa fa-user-plus"></i>
+                                        <i className="fa fa-plus"></i>
                                         <span>Thêm công trình</span>
                                     </Link>
                                 </div>
@@ -89,8 +93,8 @@ class ProjectList extends Component {
                                 <div className="row">
                                     <div className="col-sm-12 col-md-6">
                                         <div className="dataTables_length" id="example_length">
-                                            <label style={{display: 'inline-block'}}>
-                                                Hiển thị <select name="limit" className="form-control form-control-sm" style={{width: 'auto', display: 'inline-block'}}>
+                                            <label style={{ display: 'inline-block' }}>
+                                                Hiển thị <select name="limit" className="form-control form-control-sm" style={{ width: 'auto', display: 'inline-block' }}>
                                                     <option value="10">10</option>
                                                     <option value="25">25</option>
                                                     <option value="50">50</option>
@@ -100,14 +104,14 @@ class ProjectList extends Component {
                                         </div>
                                     </div>
                                     <div className="col-sm-12 col-md-6">
-                                        <div className="dataTables_filter" style={{textAlign: 'right'}}>
-                                            <label style={{display: 'inline-blocj'}}>
-                                                Tìm kiếm:<input type="search" className="form-control form-control-sm" placeholder="" style={{marginLeft: '0.5em', width: 'auto', display: 'inline-block'}} />
+                                        <div className="dataTables_filter text-right">
+                                            <label style={{ display: 'inline-block' }}>
+                                                Tìm kiếm:<input type="search" className="form-control form-control-sm" placeholder="" style={{ marginLeft: '0.5em', width: 'auto', display: 'inline-block' }} />
                                             </label>
                                         </div>
                                     </div>
                                 </div>
-                                <table className="table table-responsive-sm table-striped">
+                                <table className="table table-responsive-sm table-striped table-hover">
                                     <thead>
                                         <tr>
                                             <th>#</th>
@@ -121,7 +125,11 @@ class ProjectList extends Component {
                                         {
                                             projects.data.length ? projects.data.map((project, i) => {
                                                 return (
-                                                    <tr key={i}>
+                                                    <tr
+                                                        key={i}
+                                                        onClick={this.handleRowClick.bind(this, project.id)}
+                                                        style={{ cursor: 'pointer' }}
+                                                    >
                                                         <td>{project.id}</td>
                                                         <td>{project.name}</td>
                                                         <td>{project.location}</td>
@@ -145,4 +153,11 @@ class ProjectList extends Component {
     }
 }
 
-export default connect()(ProjectList)
+const mapDispatchToProps = dispatch => ({
+    toggleLoading: () => dispatch(appActions.toggleLoading())
+})
+
+export default connect(
+    null,
+    mapDispatchToProps
+)(ProjectList)

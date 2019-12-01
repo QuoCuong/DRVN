@@ -12,10 +12,8 @@
  */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('admin/dashboard');
 });
-
-Auth::routes(['verified', true]);
 
 Route::group([
     'prefix' => 'admin',
@@ -24,14 +22,7 @@ Route::group([
     Route::get('/', function () {
         return redirect('admin/dashboard');
     });
-    Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
-    Route::post('login', 'Auth\LoginController@login')->name('login');
-    Route::get('logout', 'Auth\LoginController@logout')->name('logout')->middleware('jwt.auth');
 
-    Route::group(['middleware' => ['auth']], function () {
-        Route::view('{any}', 'admin.dashboard')->where('any', '.*');
-    });
+    Route::view('{any}', 'admin.dashboard')->where('any', '.*');
 
 });
-
-// Route::get('/home', 'HomeController@index')->name('home');

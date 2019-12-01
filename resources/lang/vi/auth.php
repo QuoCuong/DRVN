@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'failed' => 'Tên truy cập hoặc mật khẩu không đúng.',
+    'failed' => 'Địa chỉ email hoặc mật khẩu không đúng.',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
 
 ];

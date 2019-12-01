@@ -1,7 +1,21 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { logout } from '../api/auth'
+import authActions from '../redux/auth/actions'
+import { withRouter } from 'react-router-dom'
 
 class Header extends Component {
+    handleLogoutClick() {
+        logout()
+            .then(res => {
+                this.props.unauthenticate()
+                this.props.history.push('/admin/login')
+            })
+            .catch(error => {
+                console.log(error)
+            })
+    }
+
     render() {
         return (
             <header className="app-header navbar">
@@ -24,7 +38,7 @@ class Header extends Component {
                             {this.props.user.fullname}
                         </a>
                         <div className="dropdown-menu dropdown-menu-right">
-                            <a className="dropdown-item" href={`/admin/logout?token=${window.sessionStorage.accessToken}`}>
+                            <a className="dropdown-item" href="#" onClick={this.handleLogoutClick.bind(this)}>
                                 <i className="fa fa-sign-out"></i> Đăng xuất</a>
                         </div>
                     </li>
@@ -48,4 +62,13 @@ const mapStateToProps = state => ({
     user: state.auth.user
 })
 
-export default connect(mapStateToProps)(Header)
+const mapDispatchToProps = dispatch => ({
+    unauthenticate: () => dispatch({
+        type: authActions.UNAUTHENTICATED
+    })
+})
+
+export default withRouter(connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Header))

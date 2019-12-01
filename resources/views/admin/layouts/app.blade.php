@@ -20,12 +20,14 @@
 
     <script>
         window.Laravel = {
-            baseUrl: '{!! url('/') !!}',
             csrfToken: '{{ csrf_token() }}'
         }
     </script>
 </head>
 
-@yield('body')
+<body>
+    <div id="app"></div>
+    <script src="/vendors/@coreui/coreui-plugin-chartjs-custom-tooltips/js/custom-tooltips.min.js"></script>
+</body>
 
 </html>

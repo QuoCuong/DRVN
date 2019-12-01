@@ -1,7 +1,20 @@
 import React, { Component, Fragment } from 'react'
+import { connect } from 'react-redux'
+import { Formik, Form, Field, ErrorMessage } from 'formik'
+import * as Yup from 'yup'
+import appActions from '../../redux/app/actions'
+import {
+    supervisors,
+    constructionUnits
+} from '../../api/users'
+import { createProject } from '../../api/projects'
+import ConstructionUnitList from './ConstructionUnitList'
+import SupervisorList from './SupervisorList'
 
 class ProjectCreate extends Component {
     render() {
+        const { toggleLoading } = this.props
+
         return (
             <Fragment>
                 <div className="row">
@@ -20,85 +33,269 @@ class ProjectCreate extends Component {
                                     <i className="fa fa-eye"></i> Giám sát viên</a>
                             </li>
                         </ul>
-                        <div className="tab-content">
-                            <div className="tab-pane active" id="step-one" role="tabpanel">
-                                <div className="col-md-6">
-                                    <div className="form-group row">
-                                        <label className="col-md-3 col-form-label" htmlFor="text-input">Tên công trình</label>
-                                        <div className="col-md-9">
-                                            <input className="form-control" id="text-input" type="text" name="text-input" placeholder="Tên công trình" />
+                        <Formik
+                            initialValues={{
+                                name: '',
+                                investor: '',
+                                route_start: '',
+                                route_end: '',
+                                route_length: '',
+                                location: '',
+                                description: '',
+                                start_date: '',
+                                images: [],
+                                supervisor_id: '',
+                                construction_unit_id: ''
+                            }}
+
+                            validationSchema={Yup.object().shape({
+                                name: Yup.string()
+                                    .min(2, 'Tối thiểu 2 ký tự')
+                                    .required('Bắt buộc'),
+                                investor: Yup.string()
+                                    .min(2, 'Tối thiểu 2 ký tự')
+                                    .required('Bắt buộc'),
+                                route_start: Yup.string()
+                                    .required('Bắt buộc'),
+                                route_end: Yup.string()
+                                    .required('Bắt buộc'),
+                                route_length: Yup.string()
+                                    .required('Bắt buộc'),
+                                location: Yup.string()
+                                    .required('Bắt buộc'),
+                                start_date: Yup.date()
+                                    .min(new Date(), 'Không hợp lệ')
+                                    .required('Bắt buộc'),
+                                supervisor_id: Yup.number()
+                                    .required(),
+                                construction_unit_id: Yup.number()
+                                    .required(),
+                            })}
+
+                            onSubmit={(values, actions) => {
+                                let formData = new FormData()
+
+                                formData.append('name', values.name);
+                                formData.append('investor', values.investor);
+                                formData.append('route_start', values.route_start);
+                                formData.append('route_end', values.route_end);
+                                formData.append('route_length', values.route_length);
+                                formData.append('location', values.location);
+                                formData.append('description', values.description);
+                                formData.append('start_date', values.start_date);
+                                formData.append('supervisor_id', values.supervisor_id);
+                                formData.append('construction_unit_id', values.construction_unit_id);
+
+                                values.images.length && values.images.map((image, i) => {
+                                    formData.append(`images[${i}]`, image, image.name)
+                                })
+
+                                toggleLoading()
+                                createProject(formData)
+                                    .then(res => {
+                                        this.props.history.push(`/admin/projects/${res.data.project.id}`)
+                                        $.notify({
+                                            message: res.data.message
+                                        }, {
+                                            type: 'success'
+                                        })
+                                    })
+                                    .catch(error => {
+                                        console.log(error)
+                                    })
+                                    .finally(() => {
+                                        toggleLoading()
+                                    })
+                                actions.setSubmitting(false)
+                            }}
+                        >
+                            {({
+                                touched,
+                                errors,
+                                handleSubmit,
+                                isSubmitting,
+                                setFieldValue,
+                                setValues,
+                            }) => (
+                                    <Form
+                                        id="createProjectForm"
+                                        onSubmit={handleSubmit}
+                                        autoComplete="off"
+                                        encType="multipart/form-data"
+                                    >
+                                        <div className="tab-content">
+                                            <div className="tab-pane active" id="step-one" role="tabpanel">
+
+                                                <div className="col-md-12">
+                                                    <div className="form-group row">
+                                                        <label className="col-md-3 col-form-label require" htmlFor="name-input">Tên công trình</label>
+                                                        <div className="col-md-9">
+                                                            <Field
+                                                                className={`form-control ${touched.name && errors.name ? "is-invalid" : ""}`}
+                                                                id="name-input"
+                                                                type="text"
+                                                                name="name"
+                                                                placeholder="Tên công trình" />
+                                                            <ErrorMessage
+                                                                className="invalid-feedback"
+                                                                name="name"
+                                                                component="div" />
+                                                        </div>
+                                                    </div>
+                                                    <div className="form-group row">
+                                                        <label className="col-md-3 col-form-label require" htmlFor="investor-input">Chủ đầu tư</label>
+                                                        <div className="col-md-9">
+                                                            <Field
+                                                                className={`form-control ${touched.investor && errors.investor ? "is-invalid" : ""}`}
+                                                                id="investor-input"
+                                                                type="text"
+                                                                name="investor"
+                                                                placeholder="Chủ đầu tư" />
+                                                            <ErrorMessage
+                                                                className="invalid-feedback"
+                                                                name="investor"
+                                                                component="div" />
+                                                        </div>
+                                                    </div>
+                                                    <div className="form-group row">
+                                                        <label className="col-md-3 col-form-label require" htmlFor="start-input">Điểm đầu tuyến</label>
+                                                        <div className="col-md-9">
+                                                            <Field
+                                                                className={`form-control ${touched.route_start && errors.route_start ? "is-invalid" : ""}`}
+                                                                id="start-input"
+                                                                type="text"
+                                                                name="route_start"
+                                                                placeholder="Điểm đầu tuyến" />
+                                                            <ErrorMessage
+                                                                className="invalid-feedback"
+                                                                name="route_start"
+                                                                component="div" />
+                                                        </div>
+                                                    </div>
+                                                    <div className="form-group row">
+                                                        <label className="col-md-3 col-form-label require" htmlFor="end-input">Điểm cuối tuyến</label>
+                                                        <div className="col-md-9">
+                                                            <Field
+                                                                className={`form-control ${touched.route_end && errors.route_end ? "is-invalid" : ""}`}
+                                                                id="end-input"
+                                                                type="text"
+                                                                name="route_end"
+                                                                placeholder="Điểm cuối tuyến" />
+                                                            <ErrorMessage
+                                                                className="invalid-feedback"
+                                                                name="route_end"
+                                                                component="div" />
+                                                        </div>
+                                                    </div>
+                                                    <div className="form-group row">
+                                                        <label className="col-md-3 col-form-label require" htmlFor="length-input">Chiều dài tuyến</label>
+                                                        <div className="col-md-9">
+                                                            <Field
+                                                                className={`form-control ${touched.route_length && errors.route_length ? "is-invalid" : ""}`}
+                                                                id="length-input"
+                                                                type="text"
+                                                                name="route_length"
+                                                                placeholder="Chiều dài tuyến" />
+                                                            <ErrorMessage
+                                                                className="invalid-feedback"
+                                                                name="route_length"
+                                                                component="div" />
+                                                        </div>
+                                                    </div>
+                                                    <div className="form-group row">
+                                                        <label className="col-md-3 col-form-label require" htmlFor="location-input">Địa điểm xây dựng</label>
+                                                        <div className="col-md-9">
+                                                            <Field
+                                                                className={`form-control ${touched.location && errors.location ? "is-invalid" : ""}`}
+                                                                id="location-input"
+                                                                type="text"
+                                                                name="location"
+                                                                placeholder="Địa điểm xây dựng" />
+                                                            <ErrorMessage
+                                                                className="invalid-feedback"
+                                                                name="location"
+                                                                component="div" />
+                                                        </div>
+                                                    </div>
+                                                    <div className="form-group row">
+                                                        <label className="col-md-3 col-form-label" htmlFor="textarea-input">Mô tả công trình</label>
+                                                        <div className="col-md-9">
+                                                            <Field
+                                                                className={`form-control ${touched.description && errors.description ? "is-invalid" : ""}`}
+                                                                id="textarea-input"
+                                                                component="textarea"
+                                                                name="description"
+                                                                rows="9"
+                                                                placeholder="Mô tả" />
+                                                            <ErrorMessage
+                                                                className="invalid-feedback"
+                                                                name="description"
+                                                                component="div" />
+                                                        </div>
+                                                    </div>
+                                                    <div className="form-group row">
+                                                        <label className="col-md-3 col-form-label require" htmlFor="date-input">Ngày thi công</label>
+                                                        <div className="col-md-9">
+                                                            <Field
+                                                                className={`form-control ${touched.start_date && errors.start_date ? "is-invalid" : ""}`}
+                                                                id="date-input"
+                                                                type="date"
+                                                                name="start_date" />
+                                                            <ErrorMessage
+                                                                className="invalid-feedback"
+                                                                name="start_date"
+                                                                component="div" />
+                                                        </div>
+                                                    </div>
+                                                    <div className="form-group row">
+                                                        <label className="col-md-3 col-form-label" htmlFor="file-multiple-input">Hình ảnh</label>
+                                                        <div className="col-md-9">
+                                                            <Field
+                                                                id="file-multiple-input"
+                                                                type="file"
+                                                                name="images[]"
+                                                                multiple
+                                                                accept="image/*"
+                                                                onChange={(e) => {
+                                                                    let images = []
+
+                                                                    e.target.files.forEach(image => {
+                                                                        images.push(image)
+                                                                    })
+
+                                                                    setFieldValue('images', images)
+                                                                }} />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="tab-pane" id="step-two" role="tabpanel">
+                                                <ConstructionUnitList handleRowClick={(id) => {
+                                                    setFieldValue('construction_unit_id', id)
+                                                }} />
+                                            </div>
+                                            <div className="tab-pane" id="step-three" role="tabpanel">
+                                                <SupervisorList handleRowClick={(id) => {
+                                                    setFieldValue('supervisor_id', id)
+                                                }} />
+                                                <button type="submit" className="btn btn-sm btn-success w-100" disabled={isSubmitting}>Thêm <i className="fa fa-arrow-right"></i></button>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="form-group row">
-                                        <label className="col-md-3 col-form-label" htmlFor="investor-input">Chủ đầu tư</label>
-                                        <div className="col-md-9">
-                                            <input className="form-control" id="investor-input" type="text" name="text-input" placeholder="Chủ đầu tư" />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row">
-                                        <label className="col-md-3 col-form-label" htmlFor="start-input">Điểm đầu tuyến</label>
-                                        <div className="col-md-9">
-                                            <input className="form-control" id="start-input" type="text" name="text-input" placeholder="Điểm đầu tuyến" />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row">
-                                        <label className="col-md-3 col-form-label" htmlFor="end-input">Điểm cuối tuyến</label>
-                                        <div className="col-md-9">
-                                            <input className="form-control" id="end-input" type="text" name="text-input" placeholder="Điểm cuối tuyến" />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row">
-                                        <label className="col-md-3 col-form-label" htmlFor="length-input">Chiều dài tuyến</label>
-                                        <div className="col-md-9">
-                                            <input className="form-control" id="length-input" type="text" name="text-input" placeholder="Chiều dài tuyến" />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row">
-                                        <label className="col-md-3 col-form-label" htmlFor="location-input">Địa điểm xây dựng</label>
-                                        <div className="col-md-9">
-                                            <input className="form-control" id="location-input" type="text" name="text-input" placeholder="Địa điểm xây dựng" />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row">
-                                        <label className="col-md-3 col-form-label" htmlFor="textarea-input">Mô tả công trình</label>
-                                        <div className="col-md-9">
-                                        <textarea className="form-control" id="textarea-input" name="textarea-input" rows="9" placeholder="Mô tả"></textarea>
-                                        </div>
-                                    </div>
-                                    <div className="form-group row">
-                                        <label className="col-md-3 col-form-label" htmlFor="date-input">Ngày thi công</label>
-                                        <div className="col-md-9">
-                                            <input className="form-control" id="date-input" type="date" name="date-input" placeholder="" />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row">
-                                        <label className="col-md-3 col-form-label" htmlFor="file-input">File input</label>
-                                        <div className="col-md-9">
-                                            <input id="file-input" type="file" name="file-input" />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row">
-                                        <label className="col-md-3 col-form-label" htmlFor="file-multiple-input">Multiple File input</label>
-                                        <div className="col-md-9">
-                                            <input id="file-multiple-input" type="file" name="file-multiple-input" multiple="" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <a className="btn btn-sm btn-primary nav-link"
-                                    href="#"
-                                    onClick={(e) => {
-                                        e.preventDefault()
-                                        $(`a.nav-link[href="#step-two"]`).click()
-                                    }}>Tiếp tục <i className="fa fa-arrow-right"></i></a>
-                            </div>
-                            <div className="tab-pane" id="step-two" role="tabpanel">construction unit</div>
-                            <div className="tab-pane" id="step-three" role="tabpanel">supervisor</div>
-                        </div>
+                                    </Form>
+                                )}
+                        </Formik>
                     </div>
-                </div>
-            </Fragment>
+                </div >
+            </Fragment >
         )
     }
 }
 
-export default ProjectCreate
+const mapDispatchToProps = dispatch => ({
+    toggleLoading: () => dispatch(appActions.toggleLoading())
+})
+
+export default connect(
+    null,
+    mapDispatchToProps
+)(ProjectCreate)

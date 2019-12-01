@@ -8,12 +8,14 @@ window._ = require('lodash');
 
 try {
     window.Popper = require('popper.js').default;
+
     window.$ = window.jQuery = require('jquery');
 
     require('bootstrap');
     require('@coreui/coreui');
     require('chart.js');
     require('bootstrap-notify');
+    require('@fancyapps/fancybox');
 } catch (e) {}
 
 /**

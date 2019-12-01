@@ -19,4 +19,14 @@ class Project extends Model
         'supervisor_id',
         'construction_unit_id',
     ];
+
+    public function images()
+    {
+        return $this->hasMany(Image::class);
+    }
+
+    public function progresses()
+    {
+        return $this->hasMany(Progress::class);
+    }
 }

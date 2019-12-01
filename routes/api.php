@@ -22,6 +22,7 @@ Route::group([
     'prefix' => 'admin',
 ], function () {
     Route::post('login', 'Auth\JWTAuthController@login');
+
     Route::middleware('jwt.auth')->group(function () {
 
         Route::group(['namespace' => 'Auth'], function () {
@@ -31,11 +32,17 @@ Route::group([
 
         Route::group(['namespace' => 'Api'], function () {
             Route::get('users', 'UserController@index');
+            Route::get('users/construction_units', 'UserController@constructionUnit');
+            Route::get('users/supervisors', 'UserController@supervisor');
+            Route::get('users/{user}', 'UserController@show');
             Route::post('users', 'UserController@store');
 
             Route::get('projects', 'ProjectController@index');
             Route::get('projects/supervisor', 'ProjectController@supervisor');
             Route::get('projects/construction_unit', 'ProjectController@constructionUnit');
+            Route::get('projects/{project}', 'ProjectController@show');
+            Route::post('projects', 'ProjectController@store');
+            Route::put('projects/{project}', 'ProjectController@update');
         });
     });
 });

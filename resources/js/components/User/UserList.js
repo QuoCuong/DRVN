@@ -1,14 +1,10 @@
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import config from '../../api/config'
 import axios from 'axios'
 import Pagination from '../Pagination'
 
-import {
-    enableLoading,
-    disableLoading
-} from '../../actions/appActions'
+import appActions from '../../redux/app/actions'
 
 class UserList extends Component {
     constructor(props) {
@@ -25,13 +21,18 @@ class UserList extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(nextProps) {
-        this.fetchData(nextProps.location.search)
+        this.props.location.search !== nextProps.location.search && this.fetchData(nextProps.location.search)
     }
 
     fetchData(search = this.props.location.search) {
         let url = `/api/admin/users${search}`
+        const config = {
+            headers: {
+                'Authorization': 'Bearer ' + window.localStorage.token
+            }
+        }
 
-        this.props.dispatch(enableLoading())
+        this.props.toggleLoading()
         axios.get(url, config)
             .then(res => {
                 this.setState({
@@ -42,7 +43,7 @@ class UserList extends Component {
                 console.log(error.response)
             })
             .finally(() => {
-                this.props.dispatch(disableLoading())
+                this.props.toggleLoading()
             })
     }
 
@@ -112,4 +113,11 @@ class UserList extends Component {
     }
 }
 
-export default connect()(UserList)
+const mapDispatchToProps = dispatch => ({
+    toggleLoading: () => dispatch(appActions.toggleLoading())
+})
+
+export default connect(
+    null,
+    mapDispatchToProps
+)(UserList)

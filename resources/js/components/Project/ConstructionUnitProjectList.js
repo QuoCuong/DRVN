@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { toggleLoading } from '../../actions/appActions'
+import appActions from '../../redux/app/actions'
 import { constructionUnit } from '../../api/projects'
 import Pagination from '../Pagination'
 
@@ -20,11 +20,13 @@ class ConstructionUnitProjectList extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(nextProps) {
-        this.fetchData(nextProps.location.search)
+        this.props.location.search !== nextProps.location.search && this.fetchData(nextProps.location.search)
     }
 
     fetchData(search = this.props.location.search) {
-        this.props.dispatch(toggleLoading())
+        const { toggleLoading } = this.props
+
+        toggleLoading()
         constructionUnit(search)
             .then(res => {
                 this.setState({
@@ -35,7 +37,7 @@ class ConstructionUnitProjectList extends Component {
                 console.log(error.response)
             })
             .finally(() => {
-                this.props.dispatch(toggleLoading())
+                toggleLoading()
             })
     }
 
@@ -91,8 +93,8 @@ class ConstructionUnitProjectList extends Component {
                                         </div>
                                     </div>
                                     <div className="col-sm-12 col-md-6">
-                                        <div className="dataTables_filter" style={{ textAlign: 'right' }}>
-                                            <label style={{ display: 'inline-blocj' }}>
+                                        <div className="dataTables_filter text-right">
+                                            <label style={{ display: 'inline-block' }}>
                                                 Tìm kiếm:<input type="search" className="form-control form-control-sm" placeholder="" style={{ marginLeft: '0.5em', width: 'auto', display: 'inline-block' }} />
                                             </label>
                                         </div>
@@ -136,4 +138,11 @@ class ConstructionUnitProjectList extends Component {
     }
 }
 
-export default connect()(ConstructionUnitProjectList)
+const mapDispatchToProps = dispatch => ({
+    toggleLoading: () => dispatch(appActions.toggleLoading())
+})
+
+export default connect(
+    null,
+    mapDispatchToProps
+)(ConstructionUnitProjectList)

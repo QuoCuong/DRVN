@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { toggleLoading } from '../../actions/appActions'
+import appActions from '../../redux/app/actions'
 import { supervisor } from '../../api/projects'
 import Pagination from '../Pagination'
 
@@ -20,11 +20,13 @@ class SupervisorProjectList extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(nextProps) {
-        this.fetchData(nextProps.location.search)
+        this.props.location.search !== nextProps.location.search && this.fetchData(nextProps.location.search)
     }
 
     fetchData(search = this.props.location.search) {
-        this.props.dispatch(toggleLoading())
+        const { toggleLoading } = this.props
+
+        toggleLoading()
         supervisor(search)
             .then(res => {
                 this.setState({
@@ -35,7 +37,7 @@ class SupervisorProjectList extends Component {
                 console.log(error.response)
             })
             .finally(() => {
-                this.props.dispatch(toggleLoading())
+                toggleLoading()
             })
     }
 
@@ -80,8 +82,8 @@ class SupervisorProjectList extends Component {
                                 <div className="row">
                                     <div className="col-sm-12 col-md-6">
                                         <div className="dataTables_length" id="example_length">
-                                            <label style={{display: 'inline-block'}}>
-                                                Hiển thị <select name="limit" className="form-control form-control-sm" style={{width: 'auto', display: 'inline-block'}}>
+                                            <label style={{ display: 'inline-block' }}>
+                                                Hiển thị <select name="limit" className="form-control form-control-sm" style={{ width: 'auto', display: 'inline-block' }}>
                                                     <option value="10">10</option>
                                                     <option value="25">25</option>
                                                     <option value="50">50</option>
@@ -91,9 +93,9 @@ class SupervisorProjectList extends Component {
                                         </div>
                                     </div>
                                     <div className="col-sm-12 col-md-6">
-                                        <div className="dataTables_filter" style={{textAlign: 'right'}}>
-                                            <label style={{display: 'inline-blocj'}}>
-                                                Tìm kiếm:<input type="search" className="form-control form-control-sm" placeholder="" style={{marginLeft: '0.5em', width: 'auto', display: 'inline-block'}} />
+                                        <div className="dataTables_filter text-right">
+                                            <label style={{ display: 'inline-block' }}>
+                                                Tìm kiếm:<input type="search" className="form-control form-control-sm" placeholder="" style={{ marginLeft: '0.5em', width: 'auto', display: 'inline-block' }} />
                                             </label>
                                         </div>
                                     </div>
@@ -136,4 +138,11 @@ class SupervisorProjectList extends Component {
     }
 }
 
-export default connect()(SupervisorProjectList)
+const mapDispatchToProps = dispatch => ({
+    toggleLoading: () => dispatch(appActions.toggleLoading())
+})
+
+export default connect(
+    null,
+    mapDispatchToProps
+)(SupervisorProjectList)

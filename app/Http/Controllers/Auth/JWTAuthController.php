@@ -33,13 +33,14 @@ class JWTAuthController extends Controller
         if (!($token = JWTAuth::attempt($credentials))) {
             return response()->json([
                 'errors' => [
-                    'username' => trans('auth.failed'),
+                    'email' => trans('auth.failed'),
                 ],
             ], Response::HTTP_BAD_REQUEST);
         }
 
         return response()->json([
             'token' => $token,
+            'user' => Auth::user(),
         ], Response::HTTP_OK);
     }
 

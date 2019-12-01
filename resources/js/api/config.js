@@ -1,6 +1,6 @@
 const config = {
     headers: {
-        'Authorization': 'Bearer ' + window.sessionStorage.getItem('accessToken')
+        'Authorization': 'Bearer ' + window.localStorage.getItem('token')
     }
 }
 

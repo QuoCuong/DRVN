@@ -1,8 +1,8 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment } from 'react'
 
 class Dashboard extends Component {
     componentDidMount() {
-        $.getScript(`${window.Laravel.baseUrl}/js/main.js`)
+        $.getScript(`/js/main.js`)
     }
 
     render() {
@@ -726,4 +726,4 @@ class Dashboard extends Component {
     }
 }
 
-export default Dashboard;
+export default Dashboard

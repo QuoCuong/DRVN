@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Mail\AccountInformation;
+use App\Role;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -20,6 +21,20 @@ class UserController extends Controller
     public function index()
     {
         $users = User::with('roles')->paginate(10);
+
+        return response()->json($users, Response::HTTP_OK);
+    }
+
+    public function constructionUnit()
+    {
+        $users = Role::find(Role::CONSTRUCTION_UNIT_ID)->users;
+
+        return response()->json($users, Response::HTTP_OK);
+    }
+
+    public function supervisor()
+    {
+        $users = Role::find(Role::SUPERVISOR_ID)->users;
 
         return response()->json($users, Response::HTTP_OK);
     }
@@ -98,7 +113,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        //
+        return response()->json($user, Response::HTTP_OK);
     }
 
     /**

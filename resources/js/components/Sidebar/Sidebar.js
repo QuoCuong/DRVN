@@ -7,13 +7,15 @@ import RoleSupervisor from './RoleSupervisor';
 
 class Sidebar extends Component {
     render() {
+        const { path } = this.props.match
+
         return (
             <div className="sidebar">
                 <nav className="sidebar-nav">
                     <ul className="nav">
                         <li className="nav-item">
                             <Link
-                                to={`${this.props.match.path}/dashboard`}
+                                to={`${path}/dashboard`}
                                 className="nav-link">
                                 <i className="nav-icon icon-speedometer"></i> Dashboard
                             </Link>
