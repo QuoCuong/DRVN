@@ -1,53 +1,45 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { withRouter, Link } from 'react-router-dom';
-import RoleAdmin from './RoleAdmin';
-import RoleConstructionUnit from './RoleConstructionUnit';
-import RoleSupervisor from './RoleSupervisor';
+import React from 'react'
+import { useSelector } from 'react-redux'
+import { withRouter } from 'react-router-dom'
+import RoleAdmin from './RoleAdmin'
+import RoleConstructionUnit from './RoleConstructionUnit'
+import RoleSupervisor from './RoleSupervisor'
+import NavItem from './NavItem'
 
-class Sidebar extends Component {
-    render() {
-        const { path } = this.props.match
+const Sidebar = props => {
+    const { path } = props.match
+    const authUserRole = useSelector(state => state.auth.user.role) || {}
 
-        return (
-            <div className="sidebar">
-                <nav className="sidebar-nav">
-                    <ul className="nav">
-                        <li className="nav-item">
-                            <Link
-                                to={`${path}/dashboard`}
-                                className="nav-link">
-                                <i className="nav-icon icon-speedometer"></i> Dashboard
-                            </Link>
-                        </li>
-                        {
-                            this.props.roles.length ? this.props.roles.map((role, i) => {
-                                switch (role.name) {
-                                    case 'admin':
-                                        return <RoleAdmin key={i} />
-                                    case 'supervisor':
-                                        return <RoleSupervisor key={i} />
-                                    case 'construction unit':
-                                        return <RoleConstructionUnit key={i} />
-                                    default:
-                                        break;
-                                }
-                            }) : ''
-                        }
-                    </ul>
-                </nav>
-                <button className="sidebar-minimizer brand-minimizer" type="button"></button>
-            </div>
-        );
+    function renderSwitch() {
+        switch (authUserRole.name) {
+        case 'admin':
+            return <RoleAdmin />
+        case 'supervisor':
+            return <RoleSupervisor />
+        case 'construction unit':
+            return <RoleConstructionUnit />
+        default:
+            return
+        }
     }
+
+    return (
+        <div className="sidebar">
+            <nav className="sidebar-nav">
+                <ul className="nav">
+                    <NavItem url={`${path}/dashboard`}>
+                        <i className="nav-icon icon-speedometer"></i> Bảng điều khiển
+                    </NavItem>
+                    {renderSwitch()}
+                </ul>
+            </nav>
+            <button className="sidebar-minimizer brand-minimizer" type="button"></button>
+        </div>
+    )
 }
 
 Sidebar.defaultProps = {
-    roles: []
+    role: {}
 }
 
-const mapStatetoProps = state => ({
-    roles: state.auth.user.roles
-})
-
-export default withRouter(connect(mapStatetoProps)(Sidebar));
+export default withRouter(Sidebar)

@@ -6,40 +6,40 @@ import { withRouter, Redirect } from 'react-router-dom'
 import authActions from '../../redux/auth/actions'
 
 function redirectIfNotAuthenticated(WrappedComponent) {
-    return class extends Component {
-        constructor(props) {
-            super(props)
-        }
+	return class extends Component {
+		constructor(props) {
+			super(props)
+		}
 
-        UNSAFE_componentWillMount() {
-            const { token } = window.localStorage
-            const { fetchAuthUser } = this.props
+		UNSAFE_componentWillMount() {
+			const { token } = window.localStorage
+			const { fetchAuthUser } = this.props
 
-            token && fetchAuthUser()
-        }
+			token && fetchAuthUser()
+		}
 
-        render() {
-            const { isAuthenticated } = this.props
+		render() {
+			const { isAuthenticated } = this.props
 
-            return isAuthenticated ? <WrappedComponent {...this.props} /> : <Redirect to='/admin/login' />
-        }
-    }
+			return isAuthenticated ? <WrappedComponent {...this.props} /> : <Redirect to='/admin/login' />
+		}
+	}
 }
 
 const mapStateToProps = state => ({
-    isAuthenticated: state.auth.isAuthenticated,
-    fetchSuccess: state.auth.fetchSuccess
+	isAuthenticated: state.auth.isAuthenticated,
+	fetchSuccess: state.auth.fetchSuccess
 })
 
 const mapDispatchToProps = dispatch => ({
-    fetchAuthUser: () => dispatch({ type: authActions.FETCH_AUTH_USER })
+	fetchAuthUser: () => dispatch({ type: authActions.FETCH_AUTH_USER })
 })
 
 export default compose(
-    withRouter,
-    connect(
-        mapStateToProps,
-        mapDispatchToProps
-    ),
-    redirectIfNotAuthenticated
+	withRouter,
+	connect(
+		mapStateToProps,
+		mapDispatchToProps
+	),
+	redirectIfNotAuthenticated
 )

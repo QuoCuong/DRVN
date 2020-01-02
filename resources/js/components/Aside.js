@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 
 class Aside extends Component {
     render() {
@@ -25,63 +25,76 @@ class Aside extends Component {
                     <div className="tab-pane active" id="timeline" role="tabpanel">
                         <div className="list-group list-group-accent">
                             <div
-                                className="list-group-item list-group-item-accent-secondary bg-light text-center font-weight-bold text-muted text-uppercase small">
+                                className="list-group-item list-group-item-accent-secondary bg-light text-center font-weight-bold text-muted text-uppercase small"
+                            >
                                 Today</div>
                             <div className="list-group-item list-group-item-accent-warning list-group-item-divider">
                                 <div className="avatar float-right">
                                     <img className="img-avatar" src="/img/avatars/7.jpg" alt="admin@bootstrapmaster.com" />
                                 </div>
                                 <div>Meeting with
-                        <strong>Lucas</strong>
+                                    <strong>Lucas</strong>
                                 </div>
                                 <small className="text-muted mr-3">
-                                    <i className="icon-calendar"></i>  1 - 3pm</small>
+                                    <i className="icon-calendar"></i> 1 - 3pm
+                                </small>
                                 <small className="text-muted">
-                                    <i className="icon-location-pin"></i>  Palo Alto, CA</small>
+                                    <i className="icon-location-pin"></i> Palo Alto, CA
+                                </small>
                             </div>
                             <div className="list-group-item list-group-item-accent-info">
                                 <div className="avatar float-right">
                                     <img className="img-avatar" src="/img/avatars/4.jpg" alt="admin@bootstrapmaster.com" />
                                 </div>
                                 <div>Skype with
-                        <strong>Megan</strong>
+                                    <strong>Megan</strong>
                                 </div>
                                 <small className="text-muted mr-3">
-                                    <i className="icon-calendar"></i>  4 - 5pm</small>
+                                    <i className="icon-calendar"></i> 4 - 5pm
+                                </small>
                                 <small className="text-muted">
-                                    <i className="icon-social-skype"></i>  On-line</small>
+                                    <i className="icon-social-skype"></i> On-line
+                                </small>
                             </div>
                             <div
-                                className="list-group-item list-group-item-accent-secondary bg-light text-center font-weight-bold text-muted text-uppercase small">
+                                className="list-group-item list-group-item-accent-secondary bg-light text-center font-weight-bold text-muted text-uppercase small"
+                            >
                                 Tomorrow</div>
                             <div className="list-group-item list-group-item-accent-danger list-group-item-divider">
                                 <div>New UI Project -
-                        <strong>deadline</strong>
+                                    <strong>deadline</strong>
                                 </div>
                                 <small className="text-muted mr-3">
-                                    <i className="icon-calendar"></i>  10 - 11pm</small>
+                                    <i className="icon-calendar"></i> 10 - 11pm
+                                </small>
                                 <small className="text-muted">
-                                    <i className="icon-home"></i>  creativeLabs HQ</small>
+                                    <i className="icon-home"></i> creativeLabs HQ
+                                </small>
                                 <div className="avatars-stack mt-2">
                                     <div className="avatar avatar-xs">
                                         <img className="img-avatar" src="/img/avatars/2.jpg"
-                                            alt="admin@bootstrapmaster.com" />
+                                            alt="admin@bootstrapmaster.com"
+                                        />
                                     </div>
                                     <div className="avatar avatar-xs">
                                         <img className="img-avatar" src="/img/avatars/3.jpg"
-                                            alt="admin@bootstrapmaster.com" />
+                                            alt="admin@bootstrapmaster.com"
+                                        />
                                     </div>
                                     <div className="avatar avatar-xs">
                                         <img className="img-avatar" src="/img/avatars/4.jpg"
-                                            alt="admin@bootstrapmaster.com" />
+                                            alt="admin@bootstrapmaster.com"
+                                        />
                                     </div>
                                     <div className="avatar avatar-xs">
                                         <img className="img-avatar" src="/img/avatars/5.jpg"
-                                            alt="admin@bootstrapmaster.com" />
+                                            alt="admin@bootstrapmaster.com"
+                                        />
                                     </div>
                                     <div className="avatar avatar-xs">
                                         <img className="img-avatar" src="/img/avatars/6.jpg"
-                                            alt="admin@bootstrapmaster.com" />
+                                            alt="admin@bootstrapmaster.com"
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -89,46 +102,57 @@ class Aside extends Component {
                                 <div>
                                     <strong>#10 Startups.Garden</strong> Meetup</div>
                                 <small className="text-muted mr-3">
-                                    <i className="icon-calendar"></i>  1 - 3pm</small>
+                                    <i className="icon-calendar"></i> 1 - 3pm
+                                </small>
                                 <small className="text-muted">
-                                    <i className="icon-location-pin"></i>  Palo Alto, CA</small>
+                                    <i className="icon-location-pin"></i> Palo Alto, CA
+                                </small>
                             </div>
                             <div className="list-group-item list-group-item-accent-primary list-group-item-divider">
                                 <div>
                                     <strong>Team meeting</strong>
                                 </div>
                                 <small className="text-muted mr-3">
-                                    <i className="icon-calendar"></i>  4 - 6pm</small>
+                                    <i className="icon-calendar"></i> 4 - 6pm
+                                </small>
                                 <small className="text-muted">
-                                    <i className="icon-home"></i>  creativeLabs HQ</small>
+                                    <i className="icon-home"></i> creativeLabs HQ
+                                </small>
                                 <div className="avatars-stack mt-2">
                                     <div className="avatar avatar-xs">
                                         <img className="img-avatar" src="/img/avatars/2.jpg"
-                                            alt="admin@bootstrapmaster.com" />
+                                            alt="admin@bootstrapmaster.com"
+                                        />
                                     </div>
                                     <div className="avatar avatar-xs">
                                         <img className="img-avatar" src="/img/avatars/3.jpg"
-                                            alt="admin@bootstrapmaster.com" />
+                                            alt="admin@bootstrapmaster.com"
+                                        />
                                     </div>
                                     <div className="avatar avatar-xs">
                                         <img className="img-avatar" src="/img/avatars/4.jpg"
-                                            alt="admin@bootstrapmaster.com" />
+                                            alt="admin@bootstrapmaster.com"
+                                        />
                                     </div>
                                     <div className="avatar avatar-xs">
                                         <img className="img-avatar" src="/img/avatars/5.jpg"
-                                            alt="admin@bootstrapmaster.com" />
+                                            alt="admin@bootstrapmaster.com"
+                                        />
                                     </div>
                                     <div className="avatar avatar-xs">
                                         <img className="img-avatar" src="/img/avatars/6.jpg"
-                                            alt="admin@bootstrapmaster.com" />
+                                            alt="admin@bootstrapmaster.com"
+                                        />
                                     </div>
                                     <div className="avatar avatar-xs">
                                         <img className="img-avatar" src="/img/avatars/7.jpg"
-                                            alt="admin@bootstrapmaster.com" />
+                                            alt="admin@bootstrapmaster.com"
+                                        />
                                     </div>
                                     <div className="avatar avatar-xs">
                                         <img className="img-avatar" src="/img/avatars/8.jpg"
-                                            alt="admin@bootstrapmaster.com" />
+                                            alt="admin@bootstrapmaster.com"
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -278,7 +302,8 @@ class Aside extends Component {
                         </div>
                         <div className="progress progress-xs">
                             <div className="progress-bar bg-info" role="progressbar" style={{ width: '25%' }} aria-valuenow="25"
-                                aria-valuemin="0" aria-valuemax="100"></div>
+                                aria-valuemin="0" aria-valuemax="100"
+                            ></div>
                         </div>
                         <small className="text-muted">348 Processes. 1/4 Cores.</small>
                         <div className="text-uppercase mb-1 mt-2">
@@ -288,7 +313,8 @@ class Aside extends Component {
                         </div>
                         <div className="progress progress-xs">
                             <div className="progress-bar bg-warning" role="progressbar" style={{ width: '70%' }} aria-valuenow="70"
-                                aria-valuemin="0" aria-valuemax="100"></div>
+                                aria-valuemin="0" aria-valuemax="100"
+                            ></div>
                         </div>
                         <small className="text-muted">11444GB/16384MB</small>
                         <div className="text-uppercase mb-1 mt-2">
@@ -298,7 +324,8 @@ class Aside extends Component {
                         </div>
                         <div className="progress progress-xs">
                             <div className="progress-bar bg-danger" role="progressbar" style={{ width: '95%' }} aria-valuenow="95"
-                                aria-valuemin="0" aria-valuemax="100"></div>
+                                aria-valuemin="0" aria-valuemax="100"
+                            ></div>
                         </div>
                         <small className="text-muted">243GB/256GB</small>
                         <div className="text-uppercase mb-1 mt-2">
@@ -308,14 +335,15 @@ class Aside extends Component {
                         </div>
                         <div className="progress progress-xs">
                             <div className="progress-bar bg-success" role="progressbar" style={{ width: '10%' }} aria-valuenow="10"
-                                aria-valuemin="0" aria-valuemax="100"></div>
+                                aria-valuemin="0" aria-valuemax="100"
+                            ></div>
                         </div>
                         <small className="text-muted">25GB/256GB</small>
                     </div>
                 </div>
             </aside>
-        );
+        )
     }
 }
 
-export default Aside;
+export default Aside

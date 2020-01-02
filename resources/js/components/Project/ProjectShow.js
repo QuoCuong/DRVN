@@ -1,27 +1,27 @@
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import styled from 'styled-components'
-import axios from 'axios'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import appActions from '../../redux/app/actions'
-import {
-    userShow
-} from '../../api/users'
-import {
-    projectShow,
-    updateProject
-} from '../../api/projects'
+import { projectShow, updateProject, suspendProject, cancelProject } from '../../api/projects'
 import SupervisorList from './SupervisorList'
 import ConstructionUnitList from './ConstructionUnitList'
 import UserProfile from '../UserProfile'
+import ToggleEditButton from './ToggleEditButton'
+import ProjectStatusBadge from '../badges/ProjectStatusBadge'
+import ActionButtonGroup from './ActionButtonGroup'
+import ProgressTimeline from './ProgressTimeline'
+import CreateProgressButton from './actionButtons/CreateProgressButton'
 
-require('@fancyapps/fancybox/dist/jquery.fancybox.min.css')
+import Notification from '../../helpers/Notification'
+import Editor from '../Editor'
 
 class ProjectShow extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            isEdit: false,
             project: {
                 name: '',
                 investor: '',
@@ -31,28 +31,30 @@ class ProjectShow extends Component {
                 location: '',
                 description: '',
                 start_date: '',
-                images: [],
                 supervisor_id: '',
-                construction_unit_id: ''
-            },
-            isEdit: false,
-            images: [],
-            constructionUnit: {
-                email: '',
-                fullname: '',
-                phone: ''
-            },
-            supervisor: {
-                email: '',
-                fullname: '',
-                phone: ''
-            },
-            constructionUnits: [],
-            supervisors: []
+                construction_unit_id: '',
+                construction_unit: {
+                    email: '',
+                    fullname: '',
+                    phone: ''
+                },
+                supervisor: {
+                    email: '',
+                    fullname: '',
+                    phone: ''
+                },
+                images: [],
+                progresses: []
+            }
         }
     }
 
     componentDidMount() {
+        this.fetchProject()
+        this.goToHashTab()
+    }
+
+    fetchProject() {
         const { id } = this.props.match.params
 
         projectShow(id)
@@ -60,17 +62,7 @@ class ProjectShow extends Component {
                 this.setState({
                     ...this.state,
                     project: {
-                        name: res.data.name,
-                        investor: res.data.investor,
-                        route_start: res.data.route_start,
-                        route_end: res.data.route_end,
-                        route_length: res.data.route_length,
-                        location: res.data.location,
-                        description: res.data.description || '',
-                        start_date: res.data.start_date,
-                        images: res.data.images,
-                        supervisor_id: res.data.supervisor_id,
-                        construction_unit_id: res.data.construction_unit_id
+                        ...res.data
                     }
                 })
             })
@@ -79,64 +71,45 @@ class ProjectShow extends Component {
             })
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        (this.state.project.construction_unit_id !== '' && this.state.project.supervisor_id !== '') &&
-            (this.state.project.construction_unit_id !== prevState.project.construction_unit_id && this.state.project.supervisor_id !== prevState.project.supervisor_id) &&
-            axios.all([userShow(this.state.project.construction_unit_id), userShow(this.state.project.supervisor_id)])
-                .then(axios.spread((constructionUnit, supervisor) => {
-                    this.setState({
-                        ...this.state,
-                        constructionUnit: constructionUnit.data,
-                        supervisor: supervisor.data
-                    })
-                }))
+    goToHashTab() {
+        const { hash } = this.props.location
+
+        if (hash) {
+            $(`a[href="${hash}"]`).click()
+        }
     }
 
-    handleEditSwitchChange(e) {
+    handleActionCompleted(tab = '') {
+        this.fetchProject()
+        $(`a[href="#${tab}"]`).click()
+    }
+
+    resetUI() {
+        $('input.switch-input').prop(
+            'checked',
+            false
+        )
+        $('.nav-tabs a[href="#project_info_tab"]').tab(
+            'show'
+        )
+    }
+
+    setEdit(isEdit) {
         this.setState({
-            ...this.state,
-            isEdit: $(e.target).prop('checked')
+            isEdit: isEdit
         })
     }
 
     render() {
+        const { id: projectId } = this.props.match.params
         const { isEdit } = this.state
+        const { supervisor, construction_unit, images, progresses, reason, status } = this.state.project
         const { toggleLoading } = this.props
 
         return (
             <Fragment>
                 <div className="row">
                     <div className="col-md-12 mb-4">
-                        <ul className="nav nav-tabs" role="tablist">
-                            <li className="nav-item">
-                                <a className="nav-link active" data-toggle="tab" href="#step-one" role="tab">
-                                    <i className="fa fa-info-circle"></i> Thông tin công trình</a>
-                            </li>
-                            <li className="nav-item">
-                                <a className="nav-link" data-toggle="tab" href="#step-two" role="tab">
-                                    <i className="fa fa-users"></i> Đơn vị thi công</a>
-                            </li>
-                            <li className="nav-item">
-                                <a className="nav-link" data-toggle="tab" href="#step-three" role="tab">
-                                    <i className="fa fa-eye"></i> Giám sát viên</a>
-                            </li>
-                        </ul>
-                        <div style={{
-                            display: 'flex',
-                            position: 'absolute',
-                            top: 5,
-                            right: 0,
-                            marginRight: 15
-                        }}>
-                            <label className="switch switch-label switch-success">
-                                <input className="switch-input" type="checkbox" defaultChecked={false} onChange={this.handleEditSwitchChange.bind(this)} />
-                                <span
-                                    className="switch-slider"
-                                    data-checked="On"
-                                    data-unchecked="Off"
-                                ></span>
-                            </label>
-                        </div>
                         <Formik
                             initialValues={{
                                 name: this.state.project.name,
@@ -151,7 +124,6 @@ class ProjectShow extends Component {
                                 supervisor_id: this.state.project.supervisor_id,
                                 construction_unit_id: this.state.project.construction_unit_id
                             }}
-
                             validationSchema={Yup.object().shape({
                                 name: Yup.string()
                                     .min(2, 'Tối thiểu 2 ký tự')
@@ -159,54 +131,46 @@ class ProjectShow extends Component {
                                 investor: Yup.string()
                                     .min(2, 'Tối thiểu 2 ký tự')
                                     .required('Bắt buộc'),
-                                route_start: Yup.string()
-                                    .required('Bắt buộc'),
-                                route_end: Yup.string()
-                                    .required('Bắt buộc'),
-                                route_length: Yup.string()
-                                    .required('Bắt buộc'),
-                                location: Yup.string()
-                                    .required('Bắt buộc'),
+                                route_start: Yup.string().required('Bắt buộc'),
+                                route_end: Yup.string().required('Bắt buộc'),
+                                route_length: Yup.string().required('Bắt buộc'),
+                                location: Yup.string().required('Bắt buộc'),
                                 start_date: Yup.date()
-                                    .min(new Date(), 'Không hợp lệ')
+                                    .min(new Date(), 'Phải sau ngày hiện tại')
                                     .required('Bắt buộc'),
-                                supervisor_id: Yup.number()
-                                    .required(),
-                                construction_unit_id: Yup.number()
-                                    .required(),
+                                supervisor_id: Yup.number().required(),
+                                construction_unit_id: Yup.number().required()
                             })}
-
                             enableReinitialize={true}
-
                             onSubmit={(values, actions) => {
-                                let formData = new FormData()
+                                const formData = new FormData()
 
-                                formData.append('_method', 'PUT');
-                                formData.append('name', values.name);
-                                formData.append('investor', values.investor);
-                                formData.append('route_start', values.route_start);
-                                formData.append('route_end', values.route_end);
-                                formData.append('route_length', values.route_length);
-                                formData.append('location', values.location);
-                                formData.append('description', values.description);
-                                formData.append('start_date', values.start_date);
-                                formData.append('supervisor_id', values.supervisor_id);
-                                formData.append('construction_unit_id', values.construction_unit_id);
+                                formData.append('_method', 'PUT')
+                                formData.append('name', values.name)
+                                formData.append('investor', values.investor)
+                                formData.append('route_start', values.route_start)
+                                formData.append('route_end', values.route_end)
+                                formData.append('route_length', values.route_length)
+                                formData.append('location', values.location)
+                                formData.append('description', values.description)
+                                formData.append('start_date', values.start_date)
+                                formData.append('supervisor_id', values.supervisor_id)
+                                formData.append('construction_unit_id', values.construction_unit_id)
 
                                 values.images.length && values.images.map((image, i) => {
                                     formData.append(`images[${i}]`, image, image.name)
                                 })
 
                                 toggleLoading()
-                                updateProject(this.props.match.params.id, formData)
+                                updateProject(projectId, formData)
                                     .then(res => {
-                                        console.log(res)
-                                        // this.props.history.push('/admin/projects')
-                                        // $.notify({
-                                        //     message: res.data['message']
-                                        // }, {
-                                        //     type: 'success'
-                                        // })
+                                        this.resetUI()
+                                        this.setState({
+                                            project: res.data.project,
+                                            isEdit: false
+                                        })
+
+                                        Notification.success(res.data.message)
                                     })
                                     .catch(error => {
                                         console.log(error)
@@ -223,172 +187,339 @@ class ProjectShow extends Component {
                                 errors,
                                 handleSubmit,
                                 isSubmitting,
-                                setFieldValue,
+                                setFieldValue
                             }) => (
-                                    <Form
-                                        id="createProjectForm"
-                                        onSubmit={handleSubmit}
-                                        autoComplete="off"
-                                        encType="multipart/form-data"
-                                    >
-                                        <div className="tab-content">
-                                            <div className="tab-pane active" id="step-one" role="tabpanel">
-
-                                                <div className="col-md-12">
-                                                    <div className="form-group row">
-                                                        <label className="col-md-3 col-form-label require" htmlFor="name-input">Tên công trình</label>
-                                                        <div className="col-md-9">
-                                                            <Field
-                                                                className={`form-control ${touched.name && errors.name ? "is-invalid" : ""}`}
-                                                                id="name-input"
-                                                                type="text"
-                                                                name="name"
-                                                                value={values.name}
-                                                                disabled={!isEdit} />
-                                                            <ErrorMessage
-                                                                className="invalid-feedback"
-                                                                name="name"
-                                                                component="div" />
+                                <Form onSubmit={handleSubmit}
+                                    autoComplete="off"
+                                    encType="multipart/form-data"
+                                >
+                                    <div className="card">
+                                        <div className="card-header">
+                                            <div className="card-header-actions">
+                                                <ToggleEditButton
+                                                    isEdit={isEdit}
+                                                    setEdit={this.setEdit.bind(this)}
+                                                    projectStatus={this.state.project.status}
+                                                />
+                                                {
+                                                    isEdit ? (
+                                                        <button
+                                                            type="submit"
+                                                            className="btn btn-sm btn-success"
+                                                            disabled={isSubmitting}
+                                                        >
+                                                            <i className="fa fa-dot-circle-o"></i> Cập nhật
+                                                        </button>
+                                                    ) : <ActionButtonGroup
+                                                        projectId={projectId}
+                                                        projectStatus={this.state.project.status}
+                                                        handleActionCompleted={this.handleActionCompleted.bind(this)}
+                                                    />
+                                                }
+                                            </div>
+                                        </div>
+                                        <div className="card-body">
+                                            <ul className="nav nav-tabs" role="tablist">
+                                                <li className="nav-item">
+                                                    <a
+                                                        className="nav-link active"
+                                                        data-toggle="tab"
+                                                        href="#project_info_tab"
+                                                        role="tab"
+                                                    >
+                                                        <i className="fa fa-info-circle"></i> Thông tin công trình
+                                                    </a>
+                                                </li>
+                                                <li className="nav-item">
+                                                    <a
+                                                        className="nav-link"
+                                                        data-toggle="tab"
+                                                        href="#construction_unit_tab"
+                                                        role="tab"
+                                                    >
+                                                        <i className="fa fa-users"></i> Đơn vị thi công
+                                                    </a>
+                                                </li>
+                                                <li className="nav-item">
+                                                    <a
+                                                        className="nav-link"
+                                                        data-toggle="tab"
+                                                        href="#supervisor_tab"
+                                                        role="tab"
+                                                    >
+                                                        <i className="fa fa-eye"></i> Giám sát viên
+                                                    </a>
+                                                </li>
+                                                {
+                                                    !isEdit ? (
+                                                        <li className="nav-item">
+                                                            <a
+                                                                className="nav-link"
+                                                                data-toggle="tab"
+                                                                href="#progress_tab"
+                                                                role="tab"
+                                                            >
+                                                                <i className="fa fa-line-chart"></i> Tiến độ
+                                                            </a>
+                                                        </li>
+                                                    ) : null
+                                                }
+                                            </ul>
+                                            <div className="tab-content">
+                                                <div
+                                                    className="tab-pane active"
+                                                    id="project_info_tab"
+                                                    role="tabpanel"
+                                                >
+                                                    <div className="col-md-12">
+                                                        <div className="form-group row">
+                                                            <label
+                                                                className="col-md-3 col-form-label"
+                                                                htmlFor="name-input"
+                                                            >
+                                                                Tình trạng
+                                                            </label>
+                                                            <div className="col-md-9">
+                                                                <div className="flex">
+                                                                    <ProjectStatusBadge status={this.state.project.status} />
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div className="form-group row">
-                                                        <label className="col-md-3 col-form-label require" htmlFor="investor-input">Chủ đầu tư</label>
-                                                        <div className="col-md-9">
-                                                            <Field
-                                                                className={`form-control ${touched.investor && errors.investor ? "is-invalid" : ""}`}
-                                                                id="investor-input"
-                                                                type="text"
-                                                                name="investor"
-                                                                value={values.investor}
-                                                                disabled={!isEdit} />
-                                                            <ErrorMessage
-                                                                className="invalid-feedback"
-                                                                name="investor"
-                                                                component="div" />
+                                                        {
+                                                            (reason && ['suspended', 'cancelled'].includes(status)) ? (
+                                                                <div className="form-group row">
+                                                                    <label
+                                                                        className="col-md-3 col-form-label"
+                                                                        htmlFor="name-input"
+                                                                    >
+                                                                        Lý do
+                                                                    </label>
+                                                                    <div className="col-md-9">
+                                                                        <p style={{ color: 'red' }}>{reason}</p>
+                                                                    </div>
+                                                                </div>
+                                                            ) : null
+                                                        }
+                                                        <div className="form-group row">
+                                                            <label
+                                                                className={`col-md-3 col-form-label ${isEdit && 'require'}`}
+                                                                htmlFor="name-input"
+                                                            >
+                                                                Tên công trình
+                                                            </label>
+                                                            <div className="col-md-9">
+                                                                <Field
+                                                                    className={`form-control ${touched.name && errors.name ? 'is-invalid' : ''}`}
+                                                                    id="name-input"
+                                                                    type="text"
+                                                                    name="name"
+                                                                    value={values.name}
+                                                                    disabled={!isEdit}
+                                                                />
+                                                                <ErrorMessage
+                                                                    className="invalid-feedback"
+                                                                    name="name"
+                                                                    component="div"
+                                                                />
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div className="form-group row">
-                                                        <label className="col-md-3 col-form-label require" htmlFor="start-input">Điểm đầu tuyến</label>
-                                                        <div className="col-md-9">
-                                                            <Field
-                                                                className={`form-control ${touched.route_start && errors.route_start ? "is-invalid" : ""}`}
-                                                                id="start-input"
-                                                                type="text"
-                                                                name="route_start"
-                                                                value={values.route_start}
-                                                                disabled={!isEdit} />
-                                                            <ErrorMessage
-                                                                className="invalid-feedback"
-                                                                name="route_start"
-                                                                component="div" />
+                                                        <div className="form-group row">
+                                                            <label
+                                                                className={`col-md-3 col-form-label ${isEdit && 'require'}`}
+                                                                htmlFor="investor-input"
+                                                            >
+                                                                Chủ đầu tư
+                                                            </label>
+                                                            <div className="col-md-9">
+                                                                <Field
+                                                                    className={`form-control ${touched.investor && errors.investor ? 'is-invalid' : ''}`}
+                                                                    id="investor-input"
+                                                                    type="text"
+                                                                    name="investor"
+                                                                    value={values.investor}
+                                                                    disabled={!isEdit}
+                                                                />
+                                                                <ErrorMessage
+                                                                    className="invalid-feedback"
+                                                                    name="investor"
+                                                                    component="div"
+                                                                />
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div className="form-group row">
-                                                        <label className="col-md-3 col-form-label require" htmlFor="end-input">Điểm cuối tuyến</label>
-                                                        <div className="col-md-9">
-                                                            <Field
-                                                                className={`form-control ${touched.route_end && errors.route_end ? "is-invalid" : ""}`}
-                                                                id="end-input"
-                                                                type="text"
-                                                                name="route_end"
-                                                                value={values.route_end}
-                                                                disabled={!isEdit} />
-                                                            <ErrorMessage
-                                                                className="invalid-feedback"
-                                                                name="route_end"
-                                                                component="div" />
+                                                        <div className="form-group row">
+                                                            <label
+                                                                className={`col-md-3 col-form-label ${isEdit && 'require'}`}
+                                                                htmlFor="start-input"
+                                                            >
+                                                                Điểm đầu tuyến
+                                                            </label>
+                                                            <div className="col-md-9">
+                                                                <Field
+                                                                    className={`form-control ${touched.route_start && errors.route_start ? 'is-invalid' : ''}`}
+                                                                    id="start-input"
+                                                                    type="text"
+                                                                    name="route_start"
+                                                                    value={values.route_start}
+                                                                    disabled={!isEdit}
+                                                                />
+                                                                <ErrorMessage
+                                                                    className="invalid-feedback"
+                                                                    name="route_start"
+                                                                    component="div"
+                                                                />
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div className="form-group row">
-                                                        <label className="col-md-3 col-form-label require" htmlFor="length-input">Chiều dài tuyến</label>
-                                                        <div className="col-md-9">
-                                                            <Field
-                                                                className={`form-control ${touched.route_length && errors.route_length ? "is-invalid" : ""}`}
-                                                                id="length-input"
-                                                                type="text"
-                                                                name="route_length"
-                                                                value={values.route_length}
-                                                                disabled={!isEdit} />
-                                                            <ErrorMessage
-                                                                className="invalid-feedback"
-                                                                name="route_length"
-                                                                component="div" />
+                                                        <div className="form-group row">
+                                                            <label
+                                                                className={`col-md-3 col-form-label ${isEdit && 'require'}`}
+                                                                htmlFor="end-input"
+                                                            >
+                                                                Điểm cuối tuyến
+                                                            </label>
+                                                            <div className="col-md-9">
+                                                                <Field
+                                                                    className={`form-control ${touched.route_end && errors.route_end ? 'is-invalid': ''}`}
+                                                                    id="end-input"
+                                                                    type="text"
+                                                                    name="route_end"
+                                                                    value={values.route_end}
+                                                                    disabled={!isEdit}
+                                                                />
+                                                                <ErrorMessage
+                                                                    className="invalid-feedback"
+                                                                    name="route_end"
+                                                                    component="div"
+                                                                />
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div className="form-group row">
-                                                        <label className="col-md-3 col-form-label require" htmlFor="location-input">Địa điểm xây dựng</label>
-                                                        <div className="col-md-9">
-                                                            <Field
-                                                                className={`form-control ${touched.location && errors.location ? "is-invalid" : ""}`}
-                                                                id="location-input"
-                                                                type="text"
-                                                                name="location"
-                                                                value={values.location}
-                                                                disabled={!isEdit} />
-                                                            <ErrorMessage
-                                                                className="invalid-feedback"
-                                                                name="location"
-                                                                component="div" />
+                                                        <div className="form-group row">
+                                                            <label
+                                                                className={`col-md-3 col-form-label ${isEdit && 'require'}`}
+                                                                htmlFor="length-input"
+                                                            >
+                                                                Chiều dài tuyến
+                                                            </label>
+                                                            <div className="col-md-9">
+                                                                <Field
+                                                                    className={`form-control ${touched.route_length && errors.route_length ? 'is-invalid' : ''}`}
+                                                                    id="length-input"
+                                                                    type="text"
+                                                                    name="route_length"
+                                                                    value={values.route_length}
+                                                                    disabled={!isEdit}
+                                                                />
+                                                                <ErrorMessage
+                                                                    className="invalid-feedback"
+                                                                    name="route_length"
+                                                                    component="div"
+                                                                />
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div className="form-group row">
-                                                        <label className="col-md-3 col-form-label" htmlFor="textarea-input">Mô tả công trình</label>
-                                                        <div className="col-md-9">
-                                                            <Field
-                                                                className={`form-control ${touched.description && errors.description ? "is-invalid" : ""}`}
-                                                                id="textarea-input"
-                                                                component="textarea"
-                                                                name="description"
-                                                                rows="9"
-                                                                value={values.description}
-                                                                disabled={!isEdit} />
-                                                            <ErrorMessage
-                                                                className="invalid-feedback"
-                                                                name="description"
-                                                                component="div" />
+                                                        <div className="form-group row">
+                                                            <label
+                                                                className={`col-md-3 col-form-label ${isEdit && 'require'}`}
+                                                                htmlFor="location-input"
+                                                            >
+                                                                Địa điểm xây dựng
+                                                            </label>
+                                                            <div className="col-md-9">
+                                                                <Field
+                                                                    className={`form-control ${touched.location && errors.location ? 'is-invalid' : ''}`}
+                                                                    id="location-input"
+                                                                    type="text"
+                                                                    name="location"
+                                                                    value={values.location}
+                                                                    readOnly={true}
+                                                                />
+                                                                <ErrorMessage
+                                                                    className="invalid-feedback"
+                                                                    name="location"
+                                                                    component="div"
+                                                                />
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div className="form-group row">
-                                                        <label className="col-md-3 col-form-label require" htmlFor="date-input">Ngày thi công</label>
-                                                        <div className="col-md-9">
-                                                            <Field
-                                                                className={`form-control ${touched.start_date && errors.start_date ? "is-invalid" : ""}`}
-                                                                id="date-input"
-                                                                type="date"
-                                                                name="start_date"
-                                                                value={values.start_date}
-                                                                disabled={!isEdit} />
-                                                            <ErrorMessage
-                                                                className="invalid-feedback"
-                                                                name="start_date"
-                                                                component="div" />
+                                                        <div className="form-group row">
+                                                            <label
+                                                                className="col-md-3 col-form-label"
+                                                                htmlFor="textarea-input"
+                                                            >
+                                                                Mô tả công trình
+                                                            </label>
+                                                            <div className="col-md-9">
+                                                                <Field
+                                                                    className={`${touched.description && errors.description ? 'is-invalid' : ''}`}
+                                                                    id="textarea-input"
+                                                                    name="description"
+                                                                >
+                                                                    {({ field }) => (
+                                                                        <Editor
+                                                                            value={field.value}
+                                                                            onChange={field.onChange(field.name)}
+                                                                            readOnly={!isEdit}
+                                                                        />
+                                                                    )}
+                                                                </Field>
+                                                                <ErrorMessage
+                                                                    className="invalid-feedback"
+                                                                    name="description"
+                                                                    component="div"
+                                                                />
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div className="form-group row">
-                                                        <label className="col-md-3 col-form-label" htmlFor="file-multiple-input">Hình ảnh</label>
-                                                        <div className="col-md-9">
-                                                            {
-                                                                isEdit ? (
+                                                        <div className="form-group row">
+                                                            <label
+                                                                className={`col-md-3 col-form-label ${isEdit && 'require'}`}
+                                                                htmlFor="date-input"
+                                                            >
+                                                                Ngày thi công
+                                                            </label>
+                                                            <div className="col-md-9">
+                                                                <Field
+                                                                    className={`form-control ${touched.start_date && errors.start_date ? 'is-invalid' : ''}`}
+                                                                    id="date-input"
+                                                                    type="date"
+                                                                    name="start_date"
+                                                                    value={values.start_date}
+                                                                    disabled={!isEdit}
+                                                                />
+                                                                <ErrorMessage
+                                                                    className="invalid-feedback"
+                                                                    name="start_date"
+                                                                    component="div"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div className="form-group row">
+                                                            <label
+                                                                className="col-md-3 col-form-label"
+                                                                htmlFor="file-multiple-input"
+                                                            >
+                                                                Hình ảnh
+                                                            </label>
+                                                            <div className="col-md-9">
+                                                                {isEdit ? (
                                                                     <Field
                                                                         id="file-multiple-input"
                                                                         type="file"
                                                                         name="images[]"
                                                                         multiple
                                                                         accept="image/*"
-                                                                        onChange={(e) => {
-                                                                            let images = []
+                                                                        onChange={e => {
+                                                                            const images = []
 
-                                                                            e.target.files.forEach(image => {
-                                                                                images.push(image)
-                                                                            })
+                                                                            e.target.files.forEach(
+                                                                                image => images.push(image)
+                                                                            )
 
                                                                             setFieldValue('images', images)
-                                                                        }} />
-                                                                ) : <FancyboxImageWrapper>
+                                                                        }}
+                                                                    />
+                                                                ) : (
+                                                                    <FancyboxImageWrapper>
                                                                         {
-                                                                            this.state.project.images.length ? this.state.project.images.map((image, i) => {
+                                                                            images.length ? images.map((image, i) => {
                                                                                 return (
-                                                                                    <FancyboxItem key={i}>
+                                                                                    <FancyboxItem key={i} >
                                                                                         <a href={image.path} data-fancybox>
                                                                                             <FancyboxImage src={image.path} />
                                                                                         </a>
@@ -397,49 +528,186 @@ class ProjectShow extends Component {
                                                                             }) : null
                                                                         }
                                                                     </FancyboxImageWrapper>
-                                                            }
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div className="tab-pane" id="step-two" role="tabpanel">
-                                                {
-                                                    isEdit ? (
-                                                        <ConstructionUnitList handleRowClick={(id) => {
-                                                            setFieldValue('construction_unit_id', id)
-                                                        }} />
-                                                    ) : (
+                                                <div
+                                                    className="tab-pane"
+                                                    id="construction_unit_tab"
+                                                    role="tabpanel"
+                                                >
+                                                    {
+                                                        isEdit ? (
+                                                            <ConstructionUnitList
+                                                                handleRowClick={id => { setFieldValue('construction_unit_id', id)} }
+                                                            />
+                                                        ) : (
                                                             <UserProfile
-                                                                email={this.state.constructionUnit.email}
-                                                                fullname={this.state.constructionUnit.fullname}
-                                                                phone={this.state.constructionUnit.phone} />
+                                                                email={construction_unit.email}
+                                                                fullname={construction_unit.fullname}
+                                                                phone={construction_unit.phone}
+                                                            />
                                                         )
-                                                }
-                                            </div>
-                                            <div className="tab-pane" id="step-three" role="tabpanel">
-                                                {
-                                                    isEdit ? (
-                                                        <Fragment>
-                                                            <SupervisorList handleRowClick={(id) => {
-                                                                setFieldValue('supervisor_id', id)
-                                                            }} />
-                                                            <button type="submit" className="btn btn-sm btn-success w-100" disabled={isSubmitting}>Thêm <i className="fa fa-arrow-right"></i></button>
-                                                        </Fragment>
-                                                    ) : (
+                                                    }
+                                                </div>
+                                                <div
+                                                    className="tab-pane"
+                                                    id="supervisor_tab"
+                                                    role="tabpanel"
+                                                >
+                                                    {
+                                                        isEdit ? (
+                                                            <SupervisorList
+                                                                handleRowClick={ id => {setFieldValue('supervisor_id', id)} }
+                                                            />
+                                                        ) : (
                                                             <UserProfile
-                                                                email={this.state.supervisor.email}
-                                                                fullname={this.state.supervisor.fullname}
-                                                                phone={this.state.supervisor.phone} />
+                                                                email={supervisor.email}
+                                                                fullname={supervisor.fullname}
+                                                                phone={supervisor.phone}
+                                                            />
                                                         )
+                                                    }
+                                                </div>
+                                                {
+                                                    !isEdit ? (
+                                                        <div
+                                                            className="tab-pane"
+                                                            id="progress_tab"
+                                                            role="tabpanel"
+                                                        >
+                                                            <div className="text-right">
+                                                                <CreateProgressButton projectStatus={this.state.project.status} />
+                                                            </div>
+                                                            <ProgressTimeline progresses={progresses} projectStatus={status} handleActionCompleted={this.handleActionCompleted.bind(this)} />
+                                                        </div>
+                                                    ) : null
                                                 }
                                             </div>
                                         </div>
-                                    </Form>
-                                )}
+                                    </div>
+                                </Form>
+                            )}
                         </Formik>
                     </div>
-                </div >
-            </Fragment >
+                </div>
+                <div id="suspendProjectModal" className="modal" role="dialog" tabIndex="-1">
+                    <div className="modal-dialog modal-warning" role="document">
+                        <Formik
+                            initialValues={{
+                                reason: ''
+                            }}
+
+                            validationSchema={Yup.object().shape({
+                                reason: Yup.string().required('Bắt buộc')
+                            })}
+
+                            onSubmit={(values, actions) => {
+                                suspendProject(projectId, values)
+                                    .then(res => {
+                                        this.handleActionCompleted('project_info_tab')
+                                        Notification.success(res.data.message)
+                                    })
+                                    .catch(error => {
+                                        Notification.error(error.response.data.message)
+                                    })
+                                    .finally(() => {
+                                        $('#suspendProjectModal').modal('hide')
+                                        actions.setSubmitting(false)
+                                    })
+                            }}
+                        >
+                            {({
+                                touched,
+                                errors,
+                                isSubmitting
+                            }) => (
+                                <Form>
+                                    <div className="modal-content">
+                                        <div className="modal-header">
+                                            <h5 className="modal-title">Lý do</h5>
+                                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">×</span>
+                                            </button>
+                                        </div>
+                                        <div className="modal-body">
+                                            <Field name="reason" type="text" className={`form-control ${touched.reason && errors.reason ? 'is-invalid' : '' }`} />
+                                            <ErrorMessage
+                                                className="invalid-feedback"
+                                                name="reason"
+                                                component="div"
+                                            />
+                                        </div>
+                                        <div className="modal-footer">
+                                            <button type="submit" className="btn btn-warning" disabled={isSubmitting}>Tạm dừng công trình</button>
+                                            <button type="button" className="btn btn-secondary" data-dismiss="modal">Quay lại</button>
+                                        </div>
+                                    </div>
+                                </Form>
+                            )}
+                        </Formik>
+                    </div>
+                </div>
+                <div id="cancelProjectModal" className="modal" role="dialog" tabIndex="-1">
+                    <div className="modal-dialog modal-danger" role="document">
+                        <Formik
+                            initialValues={{
+                                reason: ''
+                            }}
+
+                            validationSchema={Yup.object().shape({
+                                reason: Yup.string().required('Bắt buộc')
+                            })}
+
+                            onSubmit={(values, actions) => {
+                                cancelProject(projectId, values)
+                                    .then(res => {
+                                        this.handleActionCompleted('project_info_tab')
+                                        Notification.success(res.data.message)
+                                    })
+                                    .catch(error => {
+                                        Notification.error(error.response.data.message)
+                                    })
+                                    .finally(() => {
+                                        $('#cancelProjectModal').modal('hide')
+                                        actions.setSubmitting(false)
+                                    })
+                            }}
+                        >
+                            {({
+                                touched,
+                                errors,
+                                isSubmitting
+                            }) => (
+                                <Form>
+                                    <div className="modal-content">
+                                        <div className="modal-header">
+                                            <h5 className="modal-title">Lý do</h5>
+                                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">×</span>
+                                            </button>
+                                        </div>
+                                        <div className="modal-body">
+                                            <Field name="reason" type="text" className={`form-control ${touched.reason && errors.reason ? 'is-invalid' : '' }`} />
+                                            <ErrorMessage
+                                                className="invalid-feedback"
+                                                name="reason"
+                                                component="div"
+                                            />
+                                        </div>
+                                        <div className="modal-footer">
+                                            <button type="submit" className="btn btn-danger" disabled={isSubmitting}>Hủy công trình</button>
+                                            <button type="button" className="btn btn-secondary" data-dismiss="modal">Quay lại</button>
+                                        </div>
+                                    </div>
+                                </Form>
+                            )}
+                        </Formik>
+                    </div>
+                </div>
+            </Fragment>
         )
     }
 }
@@ -457,15 +725,10 @@ const FancyboxItem = styled.div`
     margin-bottom: 10px;
 `
 
-const FancyboxImageWrapper = styled.div`
-
-`
+const FancyboxImageWrapper = styled.div``
 
 const mapDispatchToProps = dispatch => ({
     toggleLoading: () => dispatch(appActions.toggleLoading())
 })
 
-export default connect(
-    null,
-    mapDispatchToProps
-)(ProjectShow)
+export default connect(null, mapDispatchToProps)(ProjectShow)

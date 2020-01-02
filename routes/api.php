@@ -31,6 +31,8 @@ Route::group([
         });
 
         Route::group(['namespace' => 'Api'], function () {
+            Route::get('/', 'DashboardController@index');
+
             Route::get('users', 'UserController@index');
             Route::get('users/construction_units', 'UserController@constructionUnit');
             Route::get('users/supervisors', 'UserController@supervisor');
@@ -38,11 +40,18 @@ Route::group([
             Route::post('users', 'UserController@store');
 
             Route::get('projects', 'ProjectController@index');
-            Route::get('projects/supervisor', 'ProjectController@supervisor');
-            Route::get('projects/construction_unit', 'ProjectController@constructionUnit');
             Route::get('projects/{project}', 'ProjectController@show');
             Route::post('projects', 'ProjectController@store');
             Route::put('projects/{project}', 'ProjectController@update');
-        });
+            Route::post('projects/{project}/start', 'ProjectController@startProject');
+            Route::post('projects/{project}/suspend', 'ProjectController@suspendProject');
+            Route::post('projects/{project}/cancel', 'ProjectController@cancelProject');
+            Route::post('projects/{project}/resume', 'ProjectController@resumeProject');
+            Route::post('projects/{project}/approve', 'ProjectController@approveProject');
+            Route::post('projects/{project}/progresses', 'ProgressController@storeByProject');
+
+			Route::post('progresses/{progress}/confirm', 'ProgressController@confirmProgress');
+			Route::post('progresses/{progress}/issues', 'ProgressController@updateIssues');
+		});
     });
 });

@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react'
-import { withRouter, Link } from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
+import NavItem from './NavItem'
 
 class RoleSupervisor extends Component {
     render() {
@@ -7,13 +8,11 @@ class RoleSupervisor extends Component {
         return (
             <Fragment>
                 <li className="nav-title">Giám sát viên</li>
-                <li className="nav-item">
-                    <Link className="nav-link"
-                        to={`${url}/projects/supervisor`}>
-                        <i className="nav-icon fa fa-road"></i> Công trình</Link>
-                </li>
+                <NavItem url={`${url}/projects`}>
+                    <i className="nav-icon fa fa-road"></i> Công trình
+                </NavItem>
             </Fragment>
-        );
+        )
     }
 }
 

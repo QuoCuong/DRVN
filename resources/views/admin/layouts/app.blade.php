@@ -15,8 +15,6 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <link rel="stylesheet" href="{{ asset('vendors/font-awesome/css/font-awesome.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/style.min.css') }}">
 
     <script>
         window.Laravel = {
@@ -27,7 +25,6 @@
 
 <body>
     <div id="app"></div>
-    <script src="/vendors/@coreui/coreui-plugin-chartjs-custom-tooltips/js/custom-tooltips.min.js"></script>
 </body>
 
 </html>

@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export const createUser = (data) => {
+export const createUser = data => {
     const config = {
         headers: {
             'Authorization': 'Bearer ' + window.localStorage.token
@@ -27,7 +27,7 @@ export const constructionUnits = () => {
     return axios.get('/api/admin/users/construction_units', config)
 }
 
-export const userShow = (id) => {
+export const userShow = id => {
     const config = {
         headers: {
             'Authorization': 'Bearer ' + window.localStorage.token

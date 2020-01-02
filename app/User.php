@@ -16,7 +16,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'fullname', 'phone', 'email', 'password',
+        'fullname', 'phone', 'email', 'password', 'role_id',
     ];
 
     /**
@@ -47,32 +47,44 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    public function assignRoles(array $roles)
-    {
-        foreach ($roles as $key => $role) {
-            if ($role == 'true') {
-                $this->userRoles()->create(['role_id' => $key + 1]);
-            }
-        }
-    }
-
     public function supervisorProjects()
     {
-        return $this->hasMany('App\Project', 'supervisor_id');
+        return $this->hasMany(Project::class, 'supervisor_id');
     }
 
     public function constructionUnitProjects()
     {
-        return $this->hasMany('App\Project', 'construction_unit_id');
+        return $this->hasMany(Project::class, 'construction_unit_id');
     }
 
-    public function userRoles()
+    public function role()
     {
-        return $this->hasMany('App\UserRole');
+        return $this->belongsTo(Role::class);
     }
 
-    public function roles()
+    public function startProject($projectId)
     {
-        return $this->belongsToMany('App\Role', 'user_roles');
+        Project::findOrFail($projectId)->updateStatus('under_construction');
+    }
+
+    public function suspendProject($projectId, $reason)
+    {
+        Project::findOrFail($projectId)->update([
+            'status' => 'suspended',
+            'reason' => $reason
+        ]);
+    }
+
+    public function cancelProject($projectId, $reason)
+    {
+        Project::findOrFail($projectId)->update([
+            'status' => 'cancelled',
+            'reason' => $reason
+        ]);
+    }
+
+    public function approveProject($projectId)
+    {
+        Project::findOrFail($projectId)->updateStatus('approved');
     }
 }

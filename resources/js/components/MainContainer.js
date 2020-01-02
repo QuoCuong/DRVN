@@ -9,12 +9,15 @@ class MainContainer extends Component {
         return (
             <main className="main position-relative">
                 {
-                    loading ? <div className="spinner">
-                        <RotateSpinner
-                            size={60}
-                            color="#54A9D8"
-                            loading={loading} />
-                    </div> : null
+                    loading ? (
+                        <div className="spinner">
+                            <RotateSpinner
+                                size={60}
+                                color="#54A9D8"
+                                loading={loading}
+                            />
+                        </div>
+                    ) : null
                 }
                 <Breadcrumb />
                 <div className="container-fluid">
@@ -23,7 +26,7 @@ class MainContainer extends Component {
                     </div>
                 </div>
             </main>
-        );
+        )
     }
 }
 

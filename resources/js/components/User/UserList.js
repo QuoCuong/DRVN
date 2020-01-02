@@ -64,7 +64,8 @@ class UserList extends Component {
                                 <div className="card-header-actions">
                                     <Link
                                         to={`${this.props.match.path}/create`}
-                                        className="btn btn-brand btn-sm btn-success">
+                                        className="btn btn-brand btn-sm btn-success"
+                                    >
                                         <i className="fa fa-user-plus"></i>
                                         <span>Thêm tài khoản</span>
                                     </Link>
@@ -90,11 +91,7 @@ class UserList extends Component {
                                                         <td>{user.fullname}</td>
                                                         <td>{user.phone}</td>
                                                         <td className="text-center">
-                                                            {
-                                                                user.roles.map((role, i) => {
-                                                                    return <span key={i} className="badge badge-success">{roleAlias[role.name]}</span>
-                                                                })
-                                                            }
+                                                            <span className="badge badge-success">{roleAlias[user.role.name]}</span>
                                                         </td>
                                                         <td>{user.created_at}</td>
                                                     </tr>
@@ -109,7 +106,7 @@ class UserList extends Component {
                     </div>
                 </div>
             </Fragment>
-        );
+        )
     }
 }
 

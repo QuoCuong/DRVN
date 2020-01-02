@@ -1,17 +1,19 @@
 // Fonts
-@import url('https://fonts.googleapis.com/css?family=Nunito');
+// @import url('https://fonts.googleapis.com/css?family=Nunito');
 
 // Variables
-@import 'variables';
+// @import 'variables';
 
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
-// Icons
-@import '~simple-line-icons/css/simple-line-icons.css';
-
-// Coreui
-@import '~@coreui/coreui/dist/css/coreui.min.css';
+// CoreUI
+@import 'flag-icon-css/css/flag-icon.min';
+@import 'font-awesome/scss/font-awesome';
+@import 'simple-line-icons/css/simple-line-icons';
+@import 'react-toastify/dist/ReactToastify.min';
+@import '@fancyapps/fancybox/dist/jquery.fancybox.min';
+@import 'react-quill/dist/quill.snow';
 
 // styles
 @import 'styles'

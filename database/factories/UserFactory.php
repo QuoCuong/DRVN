@@ -21,5 +21,6 @@ $factory->define(User::class, function (Faker $faker) {
         'fullname' => $faker->name,
         'phone'    => $faker->regexify('/^(09|03|07|08|05)([0-9]{8})$/'),
         'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+        'role_id'  => random_int(2, 3),
     ];
 });

@@ -1,5 +1,6 @@
 <?php
 
+use App\Role;
 use App\User;
 use Illuminate\Database\Seeder;
 
@@ -13,21 +14,27 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
         User::create([
-            'email'    => 'quoccuong15298@gmail.com',
-            'fullname' => 'Admin',
+            'email'    => 'admin@gmail.com',
+            'fullname' => 'Quản trị viên',
             'phone'    => '0774864621',
             'password' => bcrypt('adminn'),
+            'role_id'  => Role::ADMIN_ID,
         ]);
 
         User::create([
-            'email'    => 'test@gmail.com',
-            'fullname' => 'Abc',
+            'email'    => 'supervisor@gmail.com',
+            'fullname' => 'Giám sát viên',
             'phone'    => '0774864621',
             'password' => bcrypt('adminn'),
+            'role_id'  => Role::SUPERVISOR_ID,
         ]);
 
-        factory(User::class, 30)->create()->each(function ($user) {
-            $user->userRoles()->create(['role_id' => random_int(2, 3)]);
-        });
+        User::create([
+            'email'    => 'construction@gmail.com',
+            'fullname' => 'Đơn vị thi công',
+            'phone'    => '0774864621',
+            'password' => bcrypt('adminn'),
+            'role_id'  => Role::CONSTRUCTION_UNIT_ID,
+        ]);
     }
 }

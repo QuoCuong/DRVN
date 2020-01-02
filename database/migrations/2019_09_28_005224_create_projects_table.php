@@ -23,6 +23,7 @@ class CreateProjectsTable extends Migration
             $table->string('location');
             $table->text('description')->nullable();
             $table->date('start_date');
+            $table->string('reason')->nullable();
             $table->enum('status', [
                 'waiting',
                 'under_construction',

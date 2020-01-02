@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 export const login = ({ email, password }) => {
-    return axios.post(`/api/admin/login`, { email, password })
+    return axios.post('/api/admin/login', { email, password })
 }
 
 export const logout = () => {
@@ -15,5 +15,5 @@ export const logout = () => {
         }
     }
 
-    return axios.post(`/api/admin/logout`, data, config)
+    return axios.post('/api/admin/logout', data, config)
 }

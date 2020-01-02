@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\ImageHandler;
 use App\Project;
+use App\Role;
 use App\User;
+use Auth;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -19,25 +21,38 @@ class ProjectController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $projects = Project::orderByDesc('id')->paginate(10);
+        $orderBy = $request->query('orderBy', 'desc');
+        $status  = $request->query('status', '');
+        $keyword = $request->query('search', '');
 
-        return response()->json($projects, Response::HTTP_OK);
+        $projects = $this->getAllProjectsFromAuthUser();
+        $projects = $projects
+            ->search($keyword)
+            ->statusFilter($status)
+            ->orderBy('id', $orderBy)
+            ->paginate(10);
+        $statuses = Project::STATUS_LIST;
+
+        return response()->json([
+            'projects' => $projects,
+            'statuses' => $statuses,
+        ], Response::HTTP_OK);
     }
 
-    public function supervisor()
+    private function getAllProjectsFromAuthUser()
     {
-        $projects = User::find(auth()->user()->id)->supervisorProjects()->orderByDesc('id')->paginate(10);
-
-        return response()->json($projects, Response::HTTP_OK);
-    }
-
-    public function constructionUnit()
-    {
-        $projects = User::find(auth()->user()->id)->constructionUnitProjects()->orderByDesc('id')->paginate(10);
-
-        return response()->json($projects, Response::HTTP_OK);
+        switch (Auth::user()->role_id) {
+            case Role::ADMIN_ID:
+                return Project::query();
+            case Role::CONSTRUCTION_UNIT_ID:
+                return Auth::user()->constructionUnitProjects();
+            case Role::SUPERVISOR_ID:
+                return Auth::user()->supervisorProjects();
+            default:
+                return;
+        }
     }
 
     /**
@@ -80,7 +95,7 @@ class ProjectController extends Controller
      */
     public function show($id)
     {
-        $project = Project::with('images')->find($id);
+        $project = Project::withAll()->find($id);
 
         return response()->json($project);
     }
@@ -111,7 +126,7 @@ class ProjectController extends Controller
             $project->update($request->only('name', 'investor', 'route_start', 'route_end', 'route_length', 'location', 'description', 'start_date', 'supervisor_id', 'construction_unit_id'));
 
             if ($request->images) {
-                foreach($project->images as $image) {
+                foreach ($project->images as $image) {
                     $this->deleteImage($image->path);
                 }
 
@@ -130,7 +145,7 @@ class ProjectController extends Controller
         }
 
         return response()->json([
-            'project' => $project,
+            'project' => $project->loadAll(),
             'message' => 'Cập nhật công trình thành công',
         ], Response::HTTP_OK);
     }
@@ -144,5 +159,58 @@ class ProjectController extends Controller
     public function destroy(Project $project)
     {
         //
+    }
+
+    public function startProject(Project $project)
+    {
+        Auth::user()->startProject($project->id);
+
+        return response()->json([
+            'message' => 'Đã bắt đầu công trình',
+        ], Response::HTTP_OK);
+    }
+
+    public function suspendProject(Project $project, Request $request)
+    {
+        $request->validate([
+            'reason' => 'required|string'
+        ]);
+
+        Auth::user()->suspendProject($project->id, $request->reason);
+
+        return response()->json([
+            'message' => 'Đã tạm dừng công trình',
+        ], Response::HTTP_OK);
+    }
+
+    public function cancelProject(Project $project, Request $request)
+    {
+        $request->validate([
+            'reason' => 'required|string'
+        ]);
+
+        Auth::user()->cancelProject($project->id, $request->reason);
+
+        return response()->json([
+            'message' => 'Đã hủy công trình',
+        ], Response::HTTP_OK);
+    }
+
+    public function resumeProject(Project $project)
+    {
+        Auth::user()->startProject($project->id);
+
+        return response()->json([
+            'message' => 'Thành công',
+        ], Response::HTTP_OK);
+    }
+
+    public function approveProject(Project $project)
+    {
+        Auth::user()->approveProject($project->id);
+
+        return response()->json([
+            'project' => $project,
+        ], Response::HTTP_OK);
     }
 }

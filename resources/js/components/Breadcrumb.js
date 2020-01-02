@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 
 class Breadcrumb extends Component {
     render() {
@@ -10,8 +10,8 @@ class Breadcrumb extends Component {
                 </li>
                 <li className="breadcrumb-item active">Dashboard</li>
             </ol>
-        );
+        )
     }
 }
 
-export default Breadcrumb;
+export default Breadcrumb

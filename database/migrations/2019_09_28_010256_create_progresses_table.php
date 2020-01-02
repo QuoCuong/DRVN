@@ -16,6 +16,8 @@ class CreateProgressesTable extends Migration
         Schema::create('progresses', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
+            $table->text('description')->nullable();
+            $table->text('issues')->nullable();
             $table->unsignedBigInteger('project_id');
             $table->foreign('project_id')->references('id')->on('projects');
             $table->boolean('is_complete')->default(false);

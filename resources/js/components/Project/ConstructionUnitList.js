@@ -39,7 +39,7 @@ class ConstructionUnitList extends Component {
                         </div>
                     </div>
                 </div>
-                <table id="construction_unit" className="table table-responsive-sm table-hover">
+                <table id="construction_unit" className="table table-responsive-sm table-striped">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -54,11 +54,12 @@ class ConstructionUnitList extends Component {
                                 return (
                                     <tr key={i}
                                         style={{ cursor: 'pointer' }}
-                                        onClick={(e) => {
+                                        onClick={e => {
                                             $('table#construction_unit > tbody > tr').removeClass('bg-success')
                                             $(e.target).closest('tr').addClass('bg-success')
                                             handleRowClick && handleRowClick(constructionUnit.id)
-                                        }}>
+                                        }}
+                                    >
                                         <td>{constructionUnit.id}</td>
                                         <td>{constructionUnit.fullname}</td>
                                         <td>{constructionUnit.email}</td>
@@ -70,7 +71,7 @@ class ConstructionUnitList extends Component {
                     </tbody>
                 </table>
             </div>
-        );
+        )
     }
 }
 
@@ -78,7 +79,7 @@ ConstructionUnitList.propTypes = {
     handleRowClick: PropTypes.func
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = () => ({
 
 })
 

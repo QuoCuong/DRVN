@@ -46,7 +46,7 @@ class JWTAuthController extends Controller
 
     public function user(Request $request)
     {
-        $user = User::with('roles')->find(auth()->user()->id);
+        $user = User::with('role')->find(auth()->user()->id);
 
         if ($user) {
             return response($user, Response::HTTP_OK);

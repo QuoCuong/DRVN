@@ -40,3 +40,13 @@
 .dropzone {
     padding: 10px;
 }
+
+.flex {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.card-header-actions button:not(:last-child) {
+    margin-right: 0.5rem;
+}

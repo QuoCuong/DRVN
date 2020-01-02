@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Mail\AccountInformation;
 use App\Role;
 use App\User;
+use DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
@@ -20,7 +22,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::with('roles')->paginate(10);
+        $users = User::with('role')->paginate(10);
 
         return response()->json($users, Response::HTTP_OK);
     }
@@ -57,31 +59,37 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email'    => 'required|unique:users,email',
-            'fullname' => 'required',
-            'phone'    => 'required',
-            'roles'    => 'required|array|min:3',
-        ], [
-            'email.unique'      => 'Email đã tồn tại',
-            'fullname.required' => 'Vui lòng nhập họ và tên',
-            'phone.required'    => 'Vui lòng nhập số điện thoại',
-        ]);
+        DB::beginTransaction();
+        try {
+            $validator = Validator::make($request->all(), [
+                'email'    => 'required|unique:users,email',
+                'fullname' => 'required',
+                'phone'    => 'required',
+                'role_id'  => 'required|numeric',
+            ], [
+                'email.unique'      => 'Email đã tồn tại',
+                'fullname.required' => 'Vui lòng nhập họ và tên',
+                'phone.required'    => 'Vui lòng nhập số điện thoại',
+            ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Lỗi dữ liệu',
-                'errors'  => $validator->errors(),
-            ], Response::HTTP_BAD_REQUEST);
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Lỗi dữ liệu',
+                    'errors'  => $validator->errors(),
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            $password = $this->generatePassword();
+
+            $user = $this->createUser($request->only('email', 'fullname', 'phone', 'role_id'), $password);
+
+            $this->sendAccountEmail($user, $password);
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            dd($e);
         }
-
-        $password = $this->generatePassword();
-
-        $user = $this->createUser($request->only('email', 'fullname', 'phone'), $password);
-
-        $user->assignRoles($request->roles);
-
-        $this->sendAccountEmail($user, $password);
 
         return response()->json([
             'message' => 'Thêm tài khoản thành công',
@@ -149,4 +157,5 @@ class UserController extends Controller
     {
         //
     }
+
 }

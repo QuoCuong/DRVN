@@ -13,15 +13,18 @@ class RolesTableSeeder extends Seeder
     public function run()
     {
         Role::create([
-            'name' => 'admin',
+            'name'        => 'admin',
+            'description' => 'Quản trị viên',
         ]);
 
         Role::create([
-            'name' => 'supervisor',
+            'name'        => 'supervisor',
+            'description' => 'Giám sát viên',
         ]);
 
         Role::create([
-            'name' => 'construction unit',
+            'name'        => 'construction unit',
+            'description' => 'Đơn vị thi công',
         ]);
     }
 }

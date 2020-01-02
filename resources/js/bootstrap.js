@@ -11,10 +11,15 @@ try {
 
     window.$ = window.jQuery = require('jquery');
 
+    toast = require('react-toastify');
+
     require('bootstrap');
+    require('pace');
+    require('perfect-scrollbar');
     require('@coreui/coreui');
+    require('@coreui/coreui/dist/css/coreui.min.css');
+    require('@coreui/coreui-plugin-chartjs-custom-tooltips/js/custom-tooltips');
     require('chart.js');
-    require('bootstrap-notify');
     require('@fancyapps/fancybox');
 } catch (e) {}
 

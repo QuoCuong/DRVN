@@ -48,52 +48,54 @@ class Login extends Component {
                                                 touched,
                                                 errors,
                                                 values,
-                                                handleSubmit,
-                                                isSubmitting,
+                                                isSubmitting
                                             }) => (
-                                                    <Form>
+                                                <Form>
+                                                    <Field
+                                                        type="hidden"
+                                                        name="_token"
+                                                        value={window.Laravel.csrfToken}
+                                                    />
+                                                    <div className="input-group mb-3 email">
+                                                        <div className="input-group-prepend">
+                                                            <span className="input-group-text">
+                                                                <i className="icon-user"></i>
+                                                            </span>
+                                                        </div>
                                                         <Field
-                                                            type="hidden"
-                                                            name="_token"
-                                                            value={window.Laravel.csrfToken} />
-                                                        <div className="input-group mb-3 email">
-                                                            <div className="input-group-prepend">
-                                                                <span className="input-group-text">
-                                                                    <i className="icon-user"></i>
-                                                                </span>
-                                                            </div>
-                                                            <Field
-                                                                className={`form-control ${touched.email && errors.email ? "is-invalid" : ""}`}
-                                                                type="text"
-                                                                name="email"
-                                                                placeholder="Địa chỉ email"
-                                                                value={values.email} />
-                                                            <ErrorMessage className="invalid-feedback" name="email" component="div" />
+                                                            className={`form-control ${touched.email && errors.email ? 'is-invalid' : ''}`}
+                                                            type="text"
+                                                            name="email"
+                                                            placeholder="Địa chỉ email"
+                                                            value={values.email}
+                                                        />
+                                                        <ErrorMessage className="invalid-feedback" name="email" component="div" />
+                                                    </div>
+                                                    <div className="input-group mb-4 password">
+                                                        <div className="input-group-prepend">
+                                                            <span className="input-group-text">
+                                                                <i className="icon-lock"></i>
+                                                            </span>
                                                         </div>
-                                                        <div className="input-group mb-4 password">
-                                                            <div className="input-group-prepend">
-                                                                <span className="input-group-text">
-                                                                    <i className="icon-lock"></i>
-                                                                </span>
-                                                            </div>
-                                                            <Field
-                                                                className={`form-control ${touched.password && errors.password ? "is-invalid" : ""}`}
-                                                                type="password"
-                                                                name="password"
-                                                                placeholder="Mật khẩu"
-                                                                value={values.password} />
-                                                            <ErrorMessage className="invalid-feedback" name="password" component="div" />
+                                                        <Field
+                                                            className={`form-control ${touched.password && errors.password ? 'is-invalid' : ''}`}
+                                                            type="password"
+                                                            name="password"
+                                                            placeholder="Mật khẩu"
+                                                            value={values.password}
+                                                        />
+                                                        <ErrorMessage className="invalid-feedback" name="password" component="div" />
+                                                    </div>
+                                                    <div className="row">
+                                                        <div className="col-6">
+                                                            <button className="btn btn-primary px-4" type="submit" disabled={isSubmitting}>Đăng nhập</button>
                                                         </div>
-                                                        <div className="row">
-                                                            <div className="col-6">
-                                                                <button className="btn btn-primary px-4" type="submit" disabled={isSubmitting}>Đăng nhập</button>
-                                                            </div>
-                                                            <div className="col-6 text-right">
-                                                                <button className="btn btn-link px-0" type="button">Quên mật khẩu?</button>
-                                                            </div>
+                                                        <div className="col-6 text-right">
+                                                            <button className="btn btn-link px-0" type="button">Quên mật khẩu?</button>
                                                         </div>
-                                                    </Form>
-                                                )}
+                                                    </div>
+                                                </Form>
+                                            )}
                                         </Formik>
                                     </div>
                                 </div>
@@ -112,7 +114,7 @@ class Login extends Component {
                     </div>
                 </div>
             </div>
-        );
+        )
     }
 }
 
@@ -122,11 +124,11 @@ Login.defaultProps = {
 }
 
 const mapStateToProps = state => ({
-    logginRequesting: state.auth.logginRequesting,
+    logginRequesting: state.auth.logginRequesting
 })
 
 const mapDispatchToProps = dispatch => ({
-    loginSuccess: (user) => dispatch({
+    loginSuccess: user => dispatch({
         type: authActions.LOGIN_SUCCESS,
         user: user
     })

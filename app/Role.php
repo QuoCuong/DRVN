@@ -11,11 +11,11 @@ class Role extends Model
     const CONSTRUCTION_UNIT_ID = 3;
 
     protected $fillable = [
-        'name',
+        'name', 'description',
     ];
 
     public function users()
     {
-        return $this->belongsToMany('App\User', 'user_roles');
+        return $this->hasMany(User::class);
     }
 }
