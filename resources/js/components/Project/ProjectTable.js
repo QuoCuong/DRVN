@@ -1,6 +1,8 @@
 import React, { Fragment, useState, useEffect } from 'react'
+import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import queryString from 'query-string'
+import appActions from '../../redux/app/actions'
 import { getAll } from '../../api/projects'
 import Moment from 'react-moment'
 import ProjectStatusBadge from '../badges/ProjectStatusBadge'
@@ -23,15 +25,23 @@ const ProjectTable = props => {
 
     useEffect(() => {
         fetchData()
+
+        return () => {
+            props.disableLoading()
+        }
     }, [search])
 
     function fetchData(search = props.location.search) {
+        props.toggleLoading()
         getAll(search)
             .then(res => {
                 setData(res.data)
             })
             .catch(error => {
                 console.log(error.response)
+            })
+            .finally(() => {
+                props.toggleLoading()
             })
     }
 
@@ -116,4 +126,12 @@ const ProjectTable = props => {
     )
 }
 
-export default withRouter(ProjectTable)
+const mapDispatchToProps = dispatch => ({
+    toggleLoading: () => dispatch(appActions.toggleLoading()),
+    disableLoading: () => dispatch(appActions.disableLoading())
+})
+
+export default withRouter(connect(
+    null,
+    mapDispatchToProps
+)(ProjectTable))

@@ -19982,9 +19982,9 @@ body.compensate-for-scrollbar {
 
 /* Absolute Center Spinner */
 
-.spinner {
-  position: absolute;
-  z-index: 9999;
+.loading {
+  position: fixed;
+  z-index: 1;
   top: 0;
   left: 0;
   bottom: 0;
@@ -19996,7 +19996,7 @@ body.compensate-for-scrollbar {
 
 /* Transparent Overlay */
 
-.spinner:before {
+.loading:before {
   content: "";
   display: block;
   position: absolute;
@@ -20005,6 +20005,14 @@ body.compensate-for-scrollbar {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.3);
+}
+
+.sk-spinner.sk-wave {
+  width: 40px;
+}
+
+.sk-spinner.sk-wave div:not(:last-child) {
+  margin-right: 1px;
 }
 
 .require::after {

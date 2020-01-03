@@ -1,24 +1,14 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import Breadcrumb from './Breadcrumb'
-import { RotateSpinner } from 'react-spinners-kit'
+import Loading from './Loading'
 
 class MainContainer extends Component {
     render() {
         const { loading } = this.props
         return (
-            <main className="main position-relative">
-                {
-                    loading ? (
-                        <div className="spinner">
-                            <RotateSpinner
-                                size={60}
-                                color="#54A9D8"
-                                loading={loading}
-                            />
-                        </div>
-                    ) : null
-                }
+            <main className="main">
+                {loading ? <Loading /> : null}
                 <Breadcrumb />
                 <div className="container-fluid">
                     <div className="animated fadeIn">

@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import { connect } from 'react-redux'
+import appActions from '../../../redux/app/actions'
 import useUserRole from '../../hooks/useUserRole'
 import { Modal, ModalBody, ModalFooter, Button } from 'reactstrap'
 import Editor from '../../Editor'
@@ -9,7 +11,7 @@ const CreateIssueButton = props => {
     const [modal, setModal] = useState(false)
     const [text, setText] = useState(props.issues || '')
     const [error, setError] = useState('')
-    const { progressId, projectStatus, handleActionCompleted } = props
+    const { progressId, projectStatus, handleActionCompleted, toggleLoading } = props
     const EMPTY_REACT_QUILL = '<p><br></p>'
     const acceptRole = 'admin'
 
@@ -25,6 +27,8 @@ const CreateIssueButton = props => {
         if (isEditorEmpty()) {
             setError('Bắt buộc')
         } else {
+            toggle()
+            toggleLoading()
             issues(progressId, text)
                 .then(res => {
                     Notification.success(res.data.message)
@@ -34,7 +38,7 @@ const CreateIssueButton = props => {
                     Notification.error(error.response.data.message)
                 })
                 .finally(() => {
-                    toggle()
+                    toggleLoading()
                 })
         }
     }
@@ -43,7 +47,7 @@ const CreateIssueButton = props => {
         return (!text || text === EMPTY_REACT_QUILL) ? true : false
     }
 
-    if (!useUserRole(acceptRole) || ['suspended', 'cancelled'].includes(projectStatus))
+    if (!useUserRole(acceptRole) || ['suspended', 'approved', 'cancelled'].includes(projectStatus))
         return null
 
     return (
@@ -73,4 +77,11 @@ const CreateIssueButton = props => {
     )
 }
 
-export default CreateIssueButton
+const mapDispatchToProps = dispatch => ({
+    toggleLoading: () => dispatch(appActions.toggleLoading())
+})
+
+export default connect(
+    null,
+    mapDispatchToProps
+)(CreateIssueButton)

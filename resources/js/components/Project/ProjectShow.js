@@ -605,6 +605,8 @@ class ProjectShow extends Component {
                             })}
 
                             onSubmit={(values, actions) => {
+                                $('#suspendProjectModal').modal('hide')
+                                toggleLoading()
                                 suspendProject(projectId, values)
                                     .then(res => {
                                         this.handleActionCompleted('project_info_tab')
@@ -614,8 +616,8 @@ class ProjectShow extends Component {
                                         Notification.error(error.response.data.message)
                                     })
                                     .finally(() => {
-                                        $('#suspendProjectModal').modal('hide')
                                         actions.setSubmitting(false)
+                                        toggleLoading()
                                     })
                             }}
                         >
@@ -662,6 +664,8 @@ class ProjectShow extends Component {
                             })}
 
                             onSubmit={(values, actions) => {
+                                $('#cancelProjectModal').modal('hide')
+                                toggleLoading()
                                 cancelProject(projectId, values)
                                     .then(res => {
                                         this.handleActionCompleted('project_info_tab')
@@ -671,8 +675,8 @@ class ProjectShow extends Component {
                                         Notification.error(error.response.data.message)
                                     })
                                     .finally(() => {
-                                        $('#cancelProjectModal').modal('hide')
                                         actions.setSubmitting(false)
+                                        toggleLoading()
                                     })
                             }}
                         >

@@ -1,4 +1,6 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import appActions from '../../redux/app/actions'
 import * as Yup from 'yup'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import { createProjectProgress } from '../../api/progresses'
@@ -7,6 +9,7 @@ import Notification from '../../helpers/Notification'
 import Editor from '../Editor'
 
 const ProgressCreate = props => {
+    const { toggleLoading } = props
     const { id: projectId } = props.match.params
 
     return (
@@ -41,6 +44,7 @@ const ProgressCreate = props => {
                                 formData.append(`images[${i}]`, image, image.name)
                             })
 
+                            toggleLoading()
                             createProjectProgress(projectId, formData)
                                 .then(res => {
                                     Notification.success(res.data.message)
@@ -49,7 +53,10 @@ const ProgressCreate = props => {
                                 .catch(error => {
                                     Notification.error(error.response.data.message)
                                     actions.setErrors(error.response.data.errors)
+                                })
+                                .finally(() => {
                                     actions.setSubmitting(false)
+                                    toggleLoading()
                                 })
                         }}
                     >
@@ -167,4 +174,11 @@ const ProgressCreate = props => {
     )
 }
 
-export default ProgressCreate
+const mapDispatchToProps = dispatch => ({
+    toggleLoading: () => dispatch(appActions.toggleLoading())
+})
+
+export default connect(
+    null,
+    mapDispatchToProps
+)(ProgressCreate)

@@ -1,20 +1,26 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import appActions from '../../../redux/app/actions'
 import { withRouter } from 'react-router-dom'
 import useUserRole from '../../hooks/useUserRole'
 import { resumeProject } from '../../../api/projects'
 
 const ContinueProjectButton = props => {
-    const { handleActionCompleted } = props
+    const { handleActionCompleted, toggleLoading } = props
     const { id: projectId } = props.match.params
     const acceptRole = 'admin'
 
     function handleClick() {
+        toggleLoading()
         resumeProject(projectId)
             .then(() => {
                 handleActionCompleted()
             })
             .catch(error => {
                 console.log(error)
+            })
+            .finally(() => {
+                toggleLoading()
             })
     }
 
@@ -32,4 +38,11 @@ const ContinueProjectButton = props => {
     )
 }
 
-export default withRouter(ContinueProjectButton)
+const mapDispatchToProps = dispatch => ({
+    toggleLoading: () => dispatch(appActions.toggleLoading())
+})
+
+export default withRouter(connect(
+    null,
+    mapDispatchToProps
+)(ContinueProjectButton))

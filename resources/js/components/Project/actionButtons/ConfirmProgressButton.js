@@ -1,18 +1,24 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import appActions from '../../../redux/app/actions'
 import useUserRole from '../../hooks/useUserRole'
 import { confirmProgress } from '../../../api/progresses.js'
 
 const ConfirmProgressButton = props => {
-    const { progressId, is_complete, confirmed_at, handleActionCompleted } = props
+    const { progressId, is_complete, confirmed_at, handleActionCompleted, toggleLoading } = props
     const acceptRole = 'supervisor'
 
     function handleClick() {
+        toggleLoading()
         confirmProgress(progressId)
             .then(() => {
                 handleActionCompleted()
             })
             .catch(error => {
                 console.log(error)
+            })
+            .finally(() => {
+                toggleLoading()
             })
     }
 
@@ -30,4 +36,11 @@ const ConfirmProgressButton = props => {
     )
 }
 
-export default ConfirmProgressButton
+const mapDispatchToProps = dispatch => ({
+    toggleLoading: () => dispatch(appActions.toggleLoading())
+})
+
+export default connect(
+    null,
+    mapDispatchToProps
+)(ConfirmProgressButton)
