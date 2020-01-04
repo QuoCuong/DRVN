@@ -9,8 +9,8 @@ class MainContainer extends Component {
         return (
             <main className="main">
                 {loading ? <Loading /> : null}
-                <Breadcrumb />
-                <div className="container-fluid">
+                {/* <Breadcrumb /> */}
+                <div className="container-fluid pt-4">
                     <div className="animated fadeIn">
                         {this.props.children}
                     </div>
