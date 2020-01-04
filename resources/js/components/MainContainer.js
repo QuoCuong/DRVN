@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import Breadcrumb from './Breadcrumb'
 import Loading from './Loading'
 
 class MainContainer extends Component {
@@ -9,7 +8,6 @@ class MainContainer extends Component {
         return (
             <main className="main">
                 {loading ? <Loading /> : null}
-                {/* <Breadcrumb /> */}
                 <div className="container-fluid pt-4">
                     <div className="animated fadeIn">
                         {this.props.children}
