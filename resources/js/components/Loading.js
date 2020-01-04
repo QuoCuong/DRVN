@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react'
-import { MagicSpinner } from 'react-spinners-kit'
+import { SpiralSpinner } from 'react-spinners-kit'
 
 const Loading = () => {
-
     useEffect(() => {
         $('body').css({
             'overflow': 'hidden'
@@ -17,9 +16,10 @@ const Loading = () => {
 
     return (
         <div className="loading">
-            <MagicSpinner
+            <SpiralSpinner
                 size={60}
-                color="#000"
+                backColor="#000"
+                frontColor="#32A9D8"
                 loading={true}
             />
         </div>

@@ -23,7 +23,7 @@ class Header extends Component {
                     <span className="navbar-toggler-icon"></span>
                 </button>
                 <a className="navbar-brand" href="/admin">
-                    <img className="navbar-brand-full" src="/img/brand/logo.svg" width="89" height="25" alt="CoreUI Logo" />
+                    <img className="navbar-brand-full" src="/img/brand/logo.png" width="89" height="25" alt="CoreUI Logo" />
                     <img className="navbar-brand-minimized" src="/img/brand/sygnet.svg" width="30" height="30"
                         alt="CoreUI Logo"
                     />

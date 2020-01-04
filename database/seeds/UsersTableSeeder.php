@@ -36,5 +36,7 @@ class UsersTableSeeder extends Seeder
             'password' => bcrypt('adminn'),
             'role_id'  => Role::CONSTRUCTION_UNIT_ID,
         ]);
+
+        factory(User::class, 20)->create();
     }
 }
