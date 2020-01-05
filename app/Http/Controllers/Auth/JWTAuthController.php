@@ -38,15 +38,17 @@ class JWTAuthController extends Controller
             ], Response::HTTP_BAD_REQUEST);
         }
 
+        $user = User::with('role')->find(Auth::user()->id);
+
         return response()->json([
             'token' => $token,
-            'user' => Auth::user(),
+            'user' => $user,
         ], Response::HTTP_OK);
     }
 
     public function user(Request $request)
     {
-        $user = User::with('role')->find(auth()->user()->id);
+        $user = User::with('role')->find(Auth::user()->id);
 
         if ($user) {
             return response($user, Response::HTTP_OK);

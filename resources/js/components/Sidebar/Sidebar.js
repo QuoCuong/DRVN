@@ -1,5 +1,5 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
+import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import RoleAdmin from './RoleAdmin'
 import RoleConstructionUnit from './RoleConstructionUnit'
@@ -7,10 +7,10 @@ import RoleSupervisor from './RoleSupervisor'
 import NavItem from './NavItem'
 
 const Sidebar = props => {
+    const { authUserRole } = props
     const { path } = props.match
-    const authUserRole = useSelector(state => state.auth.user.role) || {}
 
-    function renderSwitch() {
+    const renderSwitch = () => {
         switch (authUserRole.name) {
         case 'admin':
             return <RoleAdmin />
@@ -39,7 +39,13 @@ const Sidebar = props => {
 }
 
 Sidebar.defaultProps = {
-    role: {}
+    authUserRole: {}
 }
 
-export default withRouter(Sidebar)
+const mapStateToProps = state => ({
+    authUserRole: state.auth.user.role
+})
+
+export default withRouter(connect(
+    mapStateToProps
+)(Sidebar))

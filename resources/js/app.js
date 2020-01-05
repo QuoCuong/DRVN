@@ -8,23 +8,16 @@ require('./bootstrap')
 
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { BrowserRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import store from './redux/store'
-
-import redirectIfAuthenticated from './components/HOC/redirectIfAuthenticated'
-import redirectIfNotAuthenticated from './components/HOC/redirectIfNotAuthenticated'
 import App from './components/App'
-import Login from './components/Login'
 
 if (document.getElementById('app')) {
     ReactDOM.render(
         <BrowserRouter>
             <Provider store={store}>
-                <Switch>
-                    <Route exact path="/admin/login" component={redirectIfAuthenticated(Login)} />
-                    <Route path="/admin" component={redirectIfNotAuthenticated(App)} />
-                </Switch>
+                <App />
             </Provider>
         </BrowserRouter>,
         document.getElementById('app')

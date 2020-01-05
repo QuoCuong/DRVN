@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { SpiralSpinner } from 'react-spinners-kit'
+import { CircleSpinner } from 'react-spinners-kit'
 
 const Loading = () => {
     useEffect(() => {
@@ -16,10 +16,9 @@ const Loading = () => {
 
     return (
         <div className="loading">
-            <SpiralSpinner
-                size={60}
-                backColor="#000"
-                frontColor="#32A9D8"
+            <CircleSpinner
+                size={40}
+                color="#32A9D8"
                 loading={true}
             />
         </div>

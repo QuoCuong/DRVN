@@ -5,12 +5,12 @@ import authActions from '../redux/auth/actions'
 import { withRouter } from 'react-router-dom'
 
 const Header = props => {
-    const { user } = props
+    const { user, unauthenticate } = props
 
     const handleLogoutClick = () => {
         logout()
             .then(() => {
-                props.unauthenticate()
+                unauthenticate()
                 props.history.push('/admin/login')
             })
             .catch(error => {

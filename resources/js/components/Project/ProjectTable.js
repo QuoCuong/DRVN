@@ -22,17 +22,18 @@ const ProjectTable = props => {
         asc: 'Cũ nhất'
     }
     const { search } = props.location
+    const { toggleLoading, disableLoading } = props
 
     useEffect(() => {
         fetchData()
 
         return () => {
-            props.disableLoading()
+            disableLoading()
         }
     }, [search])
 
     function fetchData(search = props.location.search) {
-        props.toggleLoading()
+        toggleLoading()
         getAll(search)
             .then(res => {
                 setData(res.data)
@@ -41,7 +42,7 @@ const ProjectTable = props => {
                 console.log(error.response)
             })
             .finally(() => {
-                props.toggleLoading()
+                toggleLoading()
             })
     }
 

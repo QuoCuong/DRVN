@@ -1,44 +1,42 @@
 import React, { useEffect } from 'react'
+import { connect } from 'react-redux'
+import authActions from '../redux/auth/actions'
 import { Route, Switch } from 'react-router-dom'
-import { ToastContainer } from 'react-toastify'
-import Header from './Header'
-import Sidebar from './Sidebar/Sidebar'
-import MainContainer from './MainContainer'
-import Dashboard from './Dashboard'
-import UserList from './User/UserList'
-import UserCreate from './User/UserCreate'
-import ProjectList from './Project/ProjectList'
-import ProjectCreate from './Project/ProjectCreate'
-import ProjectShow from './Project/ProjectShow'
-import ProgressCreate from './Progress/ProgressCreate'
+import NotFound from './NotFound'
+import UnauthenticatedRoute from './Routes/UnauthenticatedRoute'
+import Login from './Login'
+import AuthenticatedRoute from './Routes/AuthenticatedRoute'
+import AppContainer from './AppContainer'
 
 const App = props => {
-    const { path } = props.match
+    const { fetchAuthUser } = props
 
     useEffect(() => {
-        $('body').addClass('app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show')
-    })
+        const { token } = window.localStorage
+        token && fetchAuthUser()
+    }, [])
 
     return (
-        <div className="app">
-            <Header />
-            <div className="app-body">
-                <Sidebar />
-                <MainContainer>
-                    <Switch>
-                        <Route exact path={`${path}/dashboard`} component={Dashboard}/>
-                        <Route exact path={`${path}/users`} component={UserList} />
-                        <Route exact path={`${path}/users/create`} component={UserCreate} />
-                        <Route exact path={`${path}/projects`} component={ProjectList} />
-                        <Route exact path={`${path}/projects/create`} component={ProjectCreate} />
-                        <Route exact path={`${path}/projects/:id`} component={ProjectShow} />
-                        <Route exact path={`${path}/projects/:id/progresses/create`} component={ProgressCreate} />
-                    </Switch>
-                </MainContainer>
-            </div>
-            <ToastContainer autoClose={3000} />
-        </div>
+        <Switch>
+            <UnauthenticatedRoute
+                exact
+                path="/admin/login"
+                component={Login}
+            />
+            <AuthenticatedRoute
+                path="/admin"
+                component={AppContainer}
+            />
+            <Route component={NotFound} />
+        </Switch>
     )
 }
 
-export default App
+const mapDispatchToProps = dispatch => ({
+    fetchAuthUser: () => dispatch({ type: authActions.FETCH_AUTH_USER })
+})
+
+export default connect(
+    null,
+    mapDispatchToProps
+)(App)
