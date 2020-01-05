@@ -1,21 +1,20 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import Loading from './Loading'
 
-class MainContainer extends Component {
-    render() {
-        const { loading } = this.props
-        return (
-            <main className="main">
-                {loading ? <Loading /> : null}
-                <div className="container-fluid pt-4">
-                    <div className="animated fadeIn">
-                        {this.props.children}
-                    </div>
+const MainContainer = props => {
+    const { loading } = props
+
+    return (
+        <main className="main">
+            {loading ? <Loading /> : null}
+            <div className="container-fluid pt-4">
+                <div className="animated fadeIn">
+                    {props.children}
                 </div>
-            </main>
-        )
-    }
+            </div>
+        </main>
+    )
 }
 
 MainContainer.defaultProps = {

@@ -14,6 +14,8 @@ function fetchAuthUserApi() {
 
 function* fetchAuthUser() {
     try {
+        yield put({ type: actions.LOGIN_REQUESTING })
+
         let response = yield call(fetchAuthUserApi)
 
         yield put({
@@ -21,6 +23,7 @@ function* fetchAuthUser() {
             user: response.data
         })
     } catch (error) {
+        yield put({ type: actions.LOGIN_FAILURE })
         yield window.localStorage.removeItem('token')
     }
 }
