@@ -91,7 +91,7 @@ const Login = props => {
                                                         <LaddaButton
                                                             className="btn btn-primary btn-ladda px-4"
                                                             type="submit"
-                                                            data-color="blue"
+                                                            data-color="#32A9D8"
                                                             data-style={ZOOM_IN}
                                                             loading={logginRequesting || isSubmitting}
                                                         >

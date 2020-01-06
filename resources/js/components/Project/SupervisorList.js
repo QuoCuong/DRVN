@@ -14,7 +14,7 @@ const SupervisorList = props => {
             .catch(error => {
                 console.log(error)
             })
-    })
+    }, [])
 
     return (
         <div className="col-md-12">

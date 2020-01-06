@@ -150,7 +150,7 @@ const ProjectShow = props => {
                                     resetUI()
                                     setProjectData({
                                         ...projectData,
-                                        ...res.projectData
+                                        ...res.data.project
                                     })
                                     setEdit(false)
 
@@ -413,7 +413,7 @@ const ProjectShow = props => {
                                                                 type="text"
                                                                 name="location"
                                                                 value={values.location}
-                                                                readOnly={true}
+                                                                disabled={!isEdit}
                                                             />
                                                             <ErrorMessage
                                                                 className="invalid-feedback"
