@@ -33,12 +33,8 @@ class ProjectController extends Controller
             ->statusFilter($status)
             ->orderBy('id', $orderBy)
             ->paginate(10);
-        $statuses = Project::STATUS_LIST;
 
-        return response()->json([
-            'projects' => $projects,
-            'statuses' => $statuses,
-        ], Response::HTTP_OK);
+        return response()->json($projects, Response::HTTP_OK);
     }
 
     private function getAllProjectsFromAuthUser()

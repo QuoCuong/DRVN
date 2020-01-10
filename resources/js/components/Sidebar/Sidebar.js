@@ -5,10 +5,10 @@ import RoleAdmin from './RoleAdmin'
 import RoleConstructionUnit from './RoleConstructionUnit'
 import RoleSupervisor from './RoleSupervisor'
 import NavItem from './NavItem'
+import { Nav } from 'reactstrap'
 
 const Sidebar = props => {
     const { authUserRole } = props
-    const { path } = props.match
 
     const renderSwitch = () => {
         switch (authUserRole.name) {
@@ -26,12 +26,15 @@ const Sidebar = props => {
     return (
         <div className="sidebar">
             <nav className="sidebar-nav">
-                <ul className="nav">
-                    <NavItem url={`${path}/dashboard`}>
-                        <i className="nav-icon icon-speedometer"></i> Bảng điều khiển
-                    </NavItem>
+                <Nav>
+                    <NavItem
+                        url="/admin/dashboard"
+                        dropdown={false}
+                        icon="nav-icon icon-speedometer"
+                        name="Bảng điều khiển"
+                    ></NavItem>
                     {renderSwitch()}
-                </ul>
+                </Nav>
             </nav>
             <button className="sidebar-minimizer brand-minimizer" type="button"></button>
         </div>

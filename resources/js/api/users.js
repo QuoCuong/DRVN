@@ -1,5 +1,14 @@
 import axios from 'axios'
 
+export const getAllUser = search => {
+    const config = {
+        headers: {
+            'Authorization': 'Bearer ' + window.localStorage.token
+        }
+    }
+    return axios.get(`/api/admin/users${search}`, config)
+}
+
 export const createUser = data => {
     const config = {
         headers: {
@@ -34,4 +43,34 @@ export const userShow = id => {
         }
     }
     return axios.get(`/api/admin/users/${id}`, config)
+}
+
+export const updateRole = (id, role) => {
+    const config = {
+        headers: {
+            'Authorization': 'Bearer ' + window.localStorage.token
+        }
+    }
+    const data = {
+        role: role
+    }
+    return axios.post(`/api/admin/users/${id}/role`, data, config)
+}
+
+export const lockUser = id => {
+    const config = {
+        headers: {
+            'Authorization': 'Bearer ' + window.localStorage.token
+        }
+    }
+    return axios.post(`/api/admin/users/${id}/lock`, [], config)
+}
+
+export const unlockUser = id => {
+    const config = {
+        headers: {
+            'Authorization': 'Bearer ' + window.localStorage.token
+        }
+    }
+    return axios.post(`/api/admin/users/${id}/unlock`, [], config)
 }

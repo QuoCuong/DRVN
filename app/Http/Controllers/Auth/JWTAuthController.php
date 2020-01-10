@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\User;
 use App\Http\Controllers\Controller;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -40,9 +40,17 @@ class JWTAuthController extends Controller
 
         $user = User::with('role')->find(Auth::user()->id);
 
+        if ($user->is_lock) {
+            return response()->json([
+                'errors' => [
+                    'email' => 'Tài khoản của bạn đã bị khóa',
+                ],
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
         return response()->json([
             'token' => $token,
-            'user' => $user,
+            'user'  => $user,
         ], Response::HTTP_OK);
     }
 

@@ -2,12 +2,14 @@ import React from 'react'
 import { withRouter } from 'react-router-dom'
 import useQueryString from '../hooks/useQueryString'
 
-const ProjectTableSearchInput = props => {
+const Search = props => {
+    const TIMEOUT = 600
+    const { placeholder } = props
+
     let timeout
 
-    function handleChange(e) {
-        const name = e.target.name
-        const value = e.target.value
+    const handleChange = e => {
+        const { name, value } = e.target
         const path = props.match.url
 
         clearTimeout(timeout)
@@ -19,7 +21,7 @@ const ProjectTableSearchInput = props => {
             })
 
             props.history.push(`${path}${search !== null ? `?${search}` : ''}`)
-        }, 1000)
+        }, TIMEOUT)
     }
 
     return (
@@ -27,15 +29,15 @@ const ProjectTableSearchInput = props => {
             type="search"
             name="search"
             className="form-control form-control-sm"
-            placeholder="Tên hoặc địa điểm..."
+            placeholder={placeholder}
             style={{
                 marginLeft: '0.5em',
                 width: 'auto',
                 display: 'inline-block'
             }}
-            onChange={handleChange.bind(this)}
+            onChange={handleChange}
         />
     )
 }
 
-export default withRouter(ProjectTableSearchInput)
+export default withRouter(Search)

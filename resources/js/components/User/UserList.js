@@ -1,93 +1,85 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router-dom'
-import axios from 'axios'
-import Pagination from '../Pagination'
-
 import appActions from '../../redux/app/actions'
+import UserRow from './UserRow'
+import Table from '../Table'
+import { getAllUser } from '../../api/users'
 
-const UserList = props => {
-    const [users, setUsers] = useState({
-        data: []
-    })
-    const { search } = props.location
-    let roleAlias = []
-    roleAlias['admin'] = 'Quản trị viên'
-    roleAlias['supervisor'] = 'Giám sát viên'
-    roleAlias['construction unit'] = 'Đơn vị thi công'
-
-    useEffect(() => {
-        fetchData()
-    }, [search])
-
-    const fetchData = () => {
-        let url = `/api/admin/users${search}`
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + window.localStorage.token
-            }
-        }
-
-        props.toggleLoading()
-        axios.get(url, config)
-            .then(res => {
-                setUsers(res.data)
-            })
-            .catch(error => {
-                console.log(error.response)
-            })
-            .finally(() => {
-                props.toggleLoading()
-            })
-    }
-
-
+const UserList = () => {
     return (
         <div className="row">
             <div className="col-lg-12">
                 <div className="card">
                     <div className="card-header">
                         <i className="fa fa-users"></i> Danh sách tài khoản
-                        <div className="card-header-actions">
-                            <Link
-                                to={`${props.match.path}/create`}
-                                className="btn btn-brand btn-sm btn-success"
-                            >
-                                <i className="fa fa-user-plus"></i>
-                                <span>Thêm tài khoản</span>
-                            </Link>
-                        </div>
                     </div>
                     <div className="card-body">
-                        <table className="table table-responsive-sm table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Email</th>
-                                    <th>Họ và tên</th>
-                                    <th>Số điện thoại</th>
-                                    <th className="text-center">Vai trò</th>
-                                    <th>Ngày tạo</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {
-                                    users.data.length ? users.data.map((user, i) => {
-                                        return (
-                                            <tr key={i}>
-                                                <td>{user.email}</td>
-                                                <td>{user.fullname}</td>
-                                                <td>{user.phone}</td>
-                                                <td className="text-center">
-                                                    <span className="badge badge-success">{roleAlias[user.role.name]}</span>
-                                                </td>
-                                                <td>{user.created_at}</td>
+                        <Table api={getAllUser}>
+                            {({ data }) => (
+                                <>
+                                    <div className="row">
+                                        <div className="col-sm-12 col-md-6">
+                                            <div className="dataTables_length" id="example_length">
+                                                <Table.Select
+                                                    label="Sắp xếp"
+                                                    name="orderBy"
+                                                    data={{
+                                                        asc: 'Cũ nhất',
+                                                        desc: 'Mới nhất'
+                                                    }}
+                                                />
+                                                <Table.Select
+                                                    className="ml-3"
+                                                    label="Vai trò"
+                                                    name="role"
+                                                    defaultOption={{
+                                                        value: '',
+                                                        text: 'Tất cả'
+                                                    }}
+                                                    data={{
+                                                        'admin': 'Quản trị viên',
+                                                        'supervisor': 'Giám sát viên',
+                                                        'construction unit': 'Đơn vị thi công'
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-sm-12 col-md-6">
+                                            <div className="dataTables_filter text-right">
+                                                <label
+                                                    style={{
+                                                        display: 'inline-block'
+                                                    }}
+                                                >
+                                                    Tìm kiếm:
+                                                    <Table.Search placeholder="Email hoặc họ tên..." />
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <table className="table table-responsive-sm table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Email</th>
+                                                <th>Họ và tên</th>
+                                                <th>Số điện thoại</th>
+                                                <th className="text-center">Vai trò</th>
+                                                <th className="text-center">Ngày tạo</th>
+                                                <th className="text-center">Tình trạng</th>
                                             </tr>
-                                        )
-                                    }) : null
-                                }
-                            </tbody>
-                        </table>
-                        <Pagination currentPage={users.current_page} lastPage={users.last_page} />
+                                        </thead>
+                                        <tbody>
+                                            {
+                                                data.length ? data.map(user => {
+                                                    return <UserRow key={user.id} user={user} />
+                                                }) : null
+                                            }
+                                        </tbody>
+                                    </table>
+                                </>
+                            )}
+                        </Table>
                     </div>
                 </div>
             </div>

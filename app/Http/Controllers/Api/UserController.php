@@ -6,12 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Mail\AccountInformation;
 use App\Role;
 use App\User;
+use Auth;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
-use Carbon\Carbon;
 
 class UserController extends Controller
 {
@@ -20,9 +20,22 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with('role')->paginate(10);
+        $orderBy = $request->query('orderBy', 'asc');
+        $role    = $request->query('role', '');
+        $keyword = $request->query('search', '');
+
+        if ($role) {
+            $role = Role::where('name', $role)->first()->id;
+        }
+
+        $users = User::where('id', '!=', Auth::user()->id)
+            ->search($keyword)
+            ->roleFilter($role)
+            ->orderBy('id', $orderBy)
+            ->with('role')
+            ->paginate(10);
 
         return response()->json($users, Response::HTTP_OK);
     }
@@ -145,6 +158,54 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         //
+    }
+
+    public function updateRole(Request $request, $id)
+    {
+        $request->validate([
+            'role' => 'string',
+        ]);
+
+        $roleId = Role::where('name', $request->role)->firstOrFail()->id;
+
+        $user = User::with('role')->findOrFail($id);
+        $user->update([
+            'role_id' => $roleId,
+        ]);
+        $user->refresh();
+
+        return response()->json([
+            'message' => 'Cập nhật vai trò thành công',
+            'user'    => $user,
+        ], Response::HTTP_OK);
+    }
+
+    public function lock($id)
+    {
+        $user = User::with('role')->findOrFail($id);
+        $user->update([
+            'is_lock' => true,
+        ]);
+        $user->refresh();
+
+        return response()->json([
+            'message' => 'Đã khóa tài khoản ' . $user->email,
+            'user'    => $user,
+        ], Response::HTTP_OK);
+    }
+
+    public function unlock($id)
+    {
+        $user = User::with('role')->findOrFail($id);
+        $user->update([
+            'is_lock' => false,
+        ]);
+        $user->refresh();
+
+        return response()->json([
+            'message' => 'Đã mở khóa tài khoản ' . $user->email,
+            'user'    => $user,
+        ], Response::HTTP_OK);
     }
 
     /**

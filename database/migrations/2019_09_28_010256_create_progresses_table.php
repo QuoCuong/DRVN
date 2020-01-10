@@ -18,10 +18,10 @@ class CreateProgressesTable extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->text('issues')->nullable();
-            $table->unsignedBigInteger('project_id');
-            $table->foreign('project_id')->references('id')->on('projects');
             $table->boolean('is_complete')->default(false);
             $table->dateTime('confirmed_at')->nullable();
+            $table->unsignedBigInteger('project_id');
+            $table->foreign('project_id')->references('id')->on('projects');
             $table->timestamps();
         });
     }

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import Header from './Header'
@@ -14,10 +14,6 @@ import ProgressCreate from './Progress/ProgressCreate'
 
 const AppContainer = props => {
     const { path } = props.match
-
-    useEffect(() => {
-        $('body').addClass('app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show')
-    })
 
     return (
         <div className="app">
@@ -36,7 +32,7 @@ const AppContainer = props => {
                     </Switch>
                 </MainContainer>
             </div>
-            <ToastContainer autoClose={3000} />
+            <ToastContainer autoClose={5000} />
         </div>
     )
 }

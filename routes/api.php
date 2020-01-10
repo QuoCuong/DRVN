@@ -23,7 +23,9 @@ Route::group([
 ], function () {
     Route::post('login', 'Auth\JWTAuthController@login');
 
-    Route::middleware('jwt.auth')->group(function () {
+    Route::group([
+        'middleware' => ['jwt.auth', 'is.unlock']
+    ], function () {
 
         Route::group(['namespace' => 'Auth'], function () {
             Route::get('auth', 'JWTAuthController@user');
@@ -38,6 +40,9 @@ Route::group([
             Route::get('users/supervisors', 'UserController@supervisor');
             Route::get('users/{user}', 'UserController@show');
             Route::post('users', 'UserController@store');
+            Route::post('users/{user}/role', 'UserController@updateRole');
+            Route::post('users/{user}/lock', 'UserController@lock');
+            Route::post('users/{user}/unlock', 'UserController@unlock');
 
             Route::get('projects', 'ProjectController@index');
             Route::get('projects/{project}', 'ProjectController@show');
@@ -50,8 +55,8 @@ Route::group([
             Route::post('projects/{project}/approve', 'ProjectController@approveProject');
             Route::post('projects/{project}/progresses', 'ProgressController@storeByProject');
 
-			Route::post('progresses/{progress}/confirm', 'ProgressController@confirmProgress');
-			Route::post('progresses/{progress}/issues', 'ProgressController@updateIssues');
-		});
+            Route::post('progresses/{progress}/confirm', 'ProgressController@confirmProgress');
+            Route::post('progresses/{progress}/issues', 'ProgressController@updateIssues');
+        });
     });
 });

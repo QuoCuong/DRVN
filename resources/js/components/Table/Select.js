@@ -1,12 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import queryString from 'query-string'
 import useQueryString from '../hooks/useQueryString'
 import { withRouter } from 'react-router-dom'
 
-const TableSelect = props => {
-    const { label, name, defaultValue, defaultOption, data } = props
+const Select = props => {
+    const { label, name, defaultOption, data } = props
 
-    function handleSelectChange(e) {
+    const handleSelectChange = e => {
         const name = e.target.name
         const value = e.target.value
         const path = props.match.url
@@ -30,8 +31,8 @@ const TableSelect = props => {
                     width: 'auto',
                     display: 'inline-block'
                 }}
-                value={defaultValue}
-                onChange={handleSelectChange.bind(this)}
+                value={queryString.parse(props.location.search)[name]}
+                onChange={handleSelectChange}
             >
                 {
                     Object.keys(defaultOption).length ? (
@@ -52,11 +53,11 @@ const TableSelect = props => {
     )
 }
 
-TableSelect.defaultProps = {
+Select.defaultProps = {
     defaultOption: {}
 }
 
-TableSelect.propTypes = {
+Select.propTypes = {
     label: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     defaultOption: PropTypes.shape({
@@ -66,4 +67,4 @@ TableSelect.propTypes = {
     data: PropTypes.object.isRequired
 }
 
-export default withRouter(TableSelect)
+export default withRouter(Select)

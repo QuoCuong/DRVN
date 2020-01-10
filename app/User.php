@@ -16,7 +16,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'fullname', 'phone', 'email', 'password', 'role_id',
+        'fullname', 'phone', 'email', 'password', 'role_id', 'is_lock',
     ];
 
     /**
@@ -60,6 +60,26 @@ class User extends Authenticatable implements JWTSubject
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public function scopeSearch($query, $keyword)
+    {
+        if ($keyword === '') {
+            return $query;
+        }
+
+        return $query
+            ->where('email', 'like', "%$keyword%")
+            ->orWhere('fullname', 'like', "%$keyword%");
+    }
+
+    public function scopeRoleFilter($query, $role)
+    {
+        if ($role === '') {
+            return $query;
+        }
+
+        return $query->whereRoleId($role);
     }
 
     public function startProject($projectId)

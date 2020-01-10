@@ -40,6 +40,11 @@ const authReducer = (state = initialState, action) => {
             logginRequesting: false,
             isAuthenticated: false
         }
+    case actions.SET_USER:
+        return {
+            ...state,
+            user: action.user
+        }
     default:
         return state
     }

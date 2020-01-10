@@ -16,9 +16,9 @@ try {
     require('bootstrap');
     require('pace');
     require('perfect-scrollbar');
-    require('@coreui/coreui');
     require('@coreui/coreui/dist/css/coreui.min.css');
     require('@coreui/coreui-plugin-chartjs-custom-tooltips/js/custom-tooltips');
+    require('@coreui/coreui');
     require('chart.js');
     require('@fancyapps/fancybox');
 } catch (e) {}

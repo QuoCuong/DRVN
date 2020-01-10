@@ -69,7 +69,7 @@ const CreateIssueButton = props => {
                     }
                 </ModalBody>
                 <ModalFooter>
-                    <Button color="warning" onClick={handleSubmit}>Gửi</Button>
+                    <Button color="danger" onClick={handleSubmit}>Gửi</Button>
                     <Button color="secondary" onClick={toggle}>Hủy</Button>
                 </ModalFooter>
             </Modal>
